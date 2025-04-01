@@ -1,3 +1,54 @@
+# Protein Master
+
+Protein Master is a React-based web application that allows users to:
+- Search for proteins by name or keyword
+- View 3D structures of proteins using the [Mol\*](https://molstar.org/) library
+- Visualize protein surface data in a custom matrix/heatmap
+
+This is a **prototype** frontend; it does not currently have a backend. The application uses mock or publicly available data (e.g., from RCSB Protein Data Bank) for demonstration purposes.
+
+---
+
+## Features
+
+- **Search Page:** A simple input box where users can type a protein name/keyword.
+- **Results Page:** Displays:
+  - A 3D structure viewer powered by Mol\*
+  - A matrix/heatmap component to visualize protein “surface” or other matrix-based data
+  - Basic protein info (name, ID, description, etc.)
+
+## Getting Started
+
+1. **Clone this repository** or download the source code.
+2. **Install dependencies** using the command:
+   ```bash
+   npm install
+3. **Run the development server**:
+    ```bash
+    npm start
+4. Open http://localhost:3000 in your browser to see the application.
+
+## Key components
+
+1. **SearchPage.js**  
+   - A simple component that provides a search input and button. Redirects to the results page when a search is performed.
+
+2. **ResultsPage.js / ResultsPage.css**  
+   - **ResultsPage.js**: Displays the main content after a search, including:
+     - Protein information (name, ID, description)
+     - The MolstarViewer for the 3D structure
+     - The MatrixViewer for a “surface” or matrix visualization
+   - **ResultsPage.css**: Styles specific to the ResultsPage layout, such as cards or grids.
+
+3. **MolstarViewer.js**  
+   - Encapsulates the Mol\* viewer logic for 3D protein visualization.
+   - Initializes the viewer in a specified `<div>`, loads a PDB structure from RCSB or another endpoint, and handles cleanup.
+
+4. **MatrixViewer.js / MatrixViewer.css**  
+   - **MatrixViewer.js**: A simple component that renders a 2D matrix/heatmap. It maps numeric values to colors (e.g., blue to red gradient).
+   - **MatrixViewer.css**: Styles for the matrix layout, cells, and any hover effects.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
