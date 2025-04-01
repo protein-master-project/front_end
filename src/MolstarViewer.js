@@ -1,8 +1,8 @@
 // MolstarViewer.js
 import React, { useEffect, useRef } from 'react';
-import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
-import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18';
-import 'molstar/lib/mol-plugin-ui/skin/light.scss';
+import { createPluginUI } from './molstar/lib/mol-plugin-ui';
+import { renderReact18 } from './molstar/lib/mol-plugin-ui/react18';
+import './molstar/lib/mol-plugin-ui/skin/light.scss';
 
 const MolstarViewer = ({ pdbId, viewType, height, width }) => {
   const containerRef = useRef(null);
