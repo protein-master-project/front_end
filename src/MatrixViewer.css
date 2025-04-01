@@ -1,0 +1,13 @@
+.matrix-viewer {
+    display: inline-block;
+    margin: auto;
+  }
+  
+  .matrix-row {
+    display: flex;
+  }
+  
+  .matrix-cell {
+    box-sizing: border-box;
+  }
+  

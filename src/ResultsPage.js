@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ResultsPage.css';
 import MolstarViewer from './MolstarViewer';
+import MatrixViewer from './MatrixViewer';
 
 const ResultsPage = () => {
-  // State to track if MolstarViewer fails to load
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(null);
@@ -14,18 +14,15 @@ const ResultsPage = () => {
     const searchQuery = urlParams.get('query');
     setQuery(searchQuery);
     
-    // In a real application, you would fetch actual protein data here
-    // For this example, we'll simulate a data fetch
+    // Simulate an API call to fetch protein data
     const fetchData = async () => {
       setLoading(true);
       
-      // Simulating API call with timeout
       setTimeout(() => {
-        // Mock data with sample PDB ID
+        // Determine a PDB ID based on the search query for demo purposes
         const proteinId = searchQuery?.toLowerCase() || 'unknown';
         let pdbId = '3PTB'; // Default PDB ID
         
-        // Map some common proteins to actual PDB IDs for demo purposes
         if (proteinId.includes('insulin')) pdbId = '4INS';
         else if (proteinId.includes('hemoglobin')) pdbId = '1HHO';
         else if (proteinId.includes('lysozyme')) pdbId = '1LYZ';
@@ -48,6 +45,14 @@ const ResultsPage = () => {
   const handleNewSearch = () => {
     window.location.href = '/';
   };
+
+  // Sample matrix data for the Surface View (4x4 array with values between 0 and 1)
+  const sampleMatrix = [
+    [0.1, 0.2, 0.5, 0.8],
+    [0.3, 0.6, 0.7, 0.9],
+    [0.4, 0.2, 0.1, 0.3],
+    [0.9, 0.8, 0.7, 0.4]
+  ];
   
   if (loading) {
     return (
@@ -95,22 +100,21 @@ const ResultsPage = () => {
               <div className="image-card">
                 <div className="image-header">Structure View</div>
                 <div className="protein-image">
-                    <MolstarViewer 
-                      pdbId={proteinData.pdbId} 
-                      viewType="structure"
-                      height="300px"
-                    />
+                  <MolstarViewer 
+                    pdbId={proteinData.pdbId} 
+                    viewType="structure"
+                    height="300px"
+                  />
                 </div>
               </div>
               <div className="image-card">
                 <div className="image-header">Surface View</div>
-                // To fill matrix view here
                 <div className="protein-image">
-                    <MolstarViewer 
-                      pdbId={proteinData.pdbId} 
-                      viewType="surface"
-                      height="300px"
-                    />
+                  <MatrixViewer 
+                    matrix={sampleMatrix}
+                    cellSize={30}
+                    colorRange={{ min: 0, max: 1 }}
+                  />
                 </div>
               </div>
             </div>

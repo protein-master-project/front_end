@@ -27,14 +27,6 @@ const MolstarViewer = ({ pdbId, viewType, height, width }) => {
 
       pluginRef.current = plugin;
 
-      plugin.config.set(PluginConfig.Viewer.ShowControls, false);
-      plugin.config.set(PluginConfig.Viewer.ShowSequence, false);
-      plugin.config.set(PluginConfig.Viewer.ShowLog, false);
-      plugin.config.set(PluginConfig.Viewer.ShowLeftPanel, false);
-      plugin.config.set(PluginConfig.Viewer.ShowExpand, false);
-      plugin.config.set(PluginConfig.Viewer.ShowSelectionMode, false);
-      plugin.config.set(PluginConfig.Viewer.ShowAnimation, false);
-
       try {
         // Default PDB ID if none provided
         const id = pdbId || '3PTB';
