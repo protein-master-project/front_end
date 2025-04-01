@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './ResultsPage.css';
+import MolstarViewer from './MolstarViewer';
+import FallbackViewer from './FallbackViewer';
 
 const ResultsPage = () => {
+  // State to track if MolstarViewer fails to load
+  const [useFallback, setUseFallback] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(null);
@@ -19,32 +23,26 @@ const ResultsPage = () => {
       
       // Simulating API call with timeout
       setTimeout(() => {
-        // Mock data
+        // Mock data with sample PDB ID
+        const proteinId = searchQuery?.toLowerCase() || 'unknown';
+        let pdbId = '3PTB'; // Default PDB ID
+        
+        // Map some common proteins to actual PDB IDs for demo purposes
+        if (proteinId.includes('insulin')) pdbId = '4INS';
+        else if (proteinId.includes('hemoglobin')) pdbId = '1HHO';
+        else if (proteinId.includes('lysozyme')) pdbId = '1LYZ';
+        else if (proteinId.includes('myoglobin')) pdbId = '1MBO';
+        
         setProteinData({
-          name: searchQuery || 'Unknown Protein',
-          id: 'P' + Math.floor(Math.random() * 100000),
-          description: 'A protein involved in cellular function',
-          images: [
-            '/api/placeholder/400/300', // Using placeholder images
-            '/api/placeholder/400/300'
-          ]
+          name: searchQuery || 'Trypsin',
+          id: pdbId,
+          description: `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
+          pdbId: pdbId
         });
+        
         setLoading(false);
       }, 1000);
     };
-    // const fetchData = async () => {
-    //     try {
-    //       setLoading(true);
-    //       const response = await fetch(`https://your-api.com/proteins?query=${searchQuery}`);
-    //       const data = await response.json();
-    //       setProteinData(data);
-    //     } catch (error) {
-    //       console.error("Error fetching protein data:", error);
-    //       // Handle error state
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   };
     
     fetchData();
   }, []);
@@ -98,26 +96,49 @@ const ResultsPage = () => {
             <div className="image-grid">
               <div className="image-card">
                 <div className="image-header">Structure View</div>
-                <img 
-                  src={proteinData.images[0]} 
-                  alt="Protein Structure" 
-                  className="protein-image"
-                />
+                <div className="protein-image">
+                  {useFallback ? (
+                    <FallbackViewer 
+                      pdbId={proteinData.pdbId} 
+                      viewType="structure"
+                      height="300px"
+                    />
+                  ) : (
+                    <MolstarViewer 
+                      pdbId={proteinData.pdbId} 
+                      viewType="structure"
+                      height="300px"
+                      onError={() => setUseFallback(true)}
+                    />
+                  )}
+                </div>
               </div>
               <div className="image-card">
                 <div className="image-header">Surface View</div>
-                <img 
-                  src={proteinData.images[1]} 
-                  alt="Protein Surface" 
-                  className="protein-image"
-                />
+                <div className="protein-image">
+                  {useFallback ? (
+                    <FallbackViewer 
+                      pdbId={proteinData.pdbId} 
+                      viewType="surface"
+                      height="300px"
+                    />
+                  ) : (
+                    <MolstarViewer 
+                      pdbId={proteinData.pdbId} 
+                      viewType="surface"
+                      height="300px"
+                      onError={() => setUseFallback(true)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
           
           <div className="results-footer">
             <div className="footer-note">
-              Note: This is a demonstration of the Protein Master interface. In a real application, actual protein data and images would be displayed.
+              Note: This is a prototype of the Protein Master interface using Mol* for 3D protein structure visualization.
+              Protein structures are loaded from the RCSB Protein Data Bank.
             </div>
           </div>
         </div>
