@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ResultsPage.css';
 import MolstarViewer from './MolstarViewer';
-import FallbackViewer from './FallbackViewer';
 
 const ResultsPage = () => {
   // State to track if MolstarViewer fails to load
-  const [useFallback, setUseFallback] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(null);
@@ -97,39 +95,22 @@ const ResultsPage = () => {
               <div className="image-card">
                 <div className="image-header">Structure View</div>
                 <div className="protein-image">
-                  {useFallback ? (
-                    <FallbackViewer 
-                      pdbId={proteinData.pdbId} 
-                      viewType="structure"
-                      height="300px"
-                    />
-                  ) : (
                     <MolstarViewer 
                       pdbId={proteinData.pdbId} 
                       viewType="structure"
                       height="300px"
-                      onError={() => setUseFallback(true)}
                     />
-                  )}
                 </div>
               </div>
               <div className="image-card">
                 <div className="image-header">Surface View</div>
+                // To fill matrix view here
                 <div className="protein-image">
-                  {useFallback ? (
-                    <FallbackViewer 
-                      pdbId={proteinData.pdbId} 
-                      viewType="surface"
-                      height="300px"
-                    />
-                  ) : (
                     <MolstarViewer 
                       pdbId={proteinData.pdbId} 
                       viewType="surface"
                       height="300px"
-                      onError={() => setUseFallback(true)}
                     />
-                  )}
                 </div>
               </div>
             </div>

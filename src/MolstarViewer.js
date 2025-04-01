@@ -1,8 +1,9 @@
 // MolstarViewer.js
 import React, { useEffect, useRef } from 'react';
-import { createPluginUI } from './molstar/lib/mol-plugin-ui';
-import { renderReact18 } from './molstar/lib/mol-plugin-ui/react18';
-import './molstar/lib/mol-plugin-ui/skin/light.scss';
+import { PluginConfig } from './molstar-lib/node_modules/molstar/lib/mol-plugin/config';
+import { createPluginUI } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui';
+import { renderReact18 } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/react18';
+import './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/skin/light.scss';
 
 const MolstarViewer = ({ pdbId, viewType, height, width }) => {
   const containerRef = useRef(null);
@@ -25,6 +26,14 @@ const MolstarViewer = ({ pdbId, viewType, height, width }) => {
       }
 
       pluginRef.current = plugin;
+
+      plugin.config.set(PluginConfig.Viewer.ShowControls, false);
+      plugin.config.set(PluginConfig.Viewer.ShowSequence, false);
+      plugin.config.set(PluginConfig.Viewer.ShowLog, false);
+      plugin.config.set(PluginConfig.Viewer.ShowLeftPanel, false);
+      plugin.config.set(PluginConfig.Viewer.ShowExpand, false);
+      plugin.config.set(PluginConfig.Viewer.ShowSelectionMode, false);
+      plugin.config.set(PluginConfig.Viewer.ShowAnimation, false);
 
       try {
         // Default PDB ID if none provided
