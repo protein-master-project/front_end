@@ -103,7 +103,7 @@ const ResultsPage = () => {
                   <MolstarViewer 
                     pdbId={proteinData.pdbId} 
                     viewType="structure"
-                    height="300px"
+                    height="250px"
                   />
                 </div>
               </div>
