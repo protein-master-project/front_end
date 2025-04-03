@@ -21,12 +21,14 @@ const ResultsPage = () => {
       setTimeout(() => {
         // Determine a PDB ID based on the search query for demo purposes
         const proteinId = searchQuery?.toLowerCase() || 'unknown';
-        let pdbId = '3PTB'; // Default PDB ID
-        
-        if (proteinId.includes('insulin')) pdbId = '4INS';
-        else if (proteinId.includes('hemoglobin')) pdbId = '1HHO';
-        else if (proteinId.includes('lysozyme')) pdbId = '1LYZ';
-        else if (proteinId.includes('myoglobin')) pdbId = '1MBO';
+        let pdbId = searchQuery;
+
+        // let pdbId = '3PTB'; // Default PDB ID
+  
+        // if (proteinId.includes('insulin')) pdbId = '4INS';
+        // else if (proteinId.includes('hemoglobin')) pdbId = '1HHO';
+        // else if (proteinId.includes('lysozyme')) pdbId = '1LYZ';
+        // else if (proteinId.includes('myoglobin')) pdbId = '1MBO';
         
         setProteinData({
           name: searchQuery || 'Trypsin',
