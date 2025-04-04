@@ -23,12 +23,11 @@ This is a **prototype** frontend; it does not currently have a backend. The appl
 2. **Install dependencies** using the command:
    ```bash
    npm install
-3. **Run the development server**:
+3. **Launch backend** : please refer to [link](https://github.com/protein-master-project/protein-master). 
+4. **Run the development server**:
     ```bash
     npm start
-4. Open http://localhost:3000 in your browser to see the application.
-
-> To integrate the frontend and backend, you should launch the backend first. For backend, please refer to [link](https://github.com/protein-master-project/protein-master). 
+5. Open http://localhost:3000 in your browser to see the application.
 
 ## Key components
 

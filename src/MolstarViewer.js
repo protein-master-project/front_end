@@ -25,7 +25,7 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
                 showControls: true,         // Keep controls on so that the sequence bar is rendered.
                 regionState: {
                     left: 'collapsed',      // Collapse the left panel.
-                    top: 'full',            // Show the top region (sequence bar).
+                    top: 'collapsed',            // Show the top region (sequence bar).
                     right: 'hidden',        // Hide the right control bar.
                     bottom: 'hidden'        // Hide the bottom region.
                 },
