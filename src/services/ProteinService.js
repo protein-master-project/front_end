@@ -42,7 +42,7 @@ export async function searchProteins(keyword: string, db: string = 'rcsb'): Prom
 }
 
 // a proxy of backend
-export async function getPdbBlobURL(pdbId: string, db: string = 'rcsb'): string {
+export async function getPdbBlobURL(pdbId: string, db: string = 'rcsb'): Promise<string[]> {
   try {
     const pdbText = await fetchPdbContent(pdbId, db);
     // console.log(pdbText)

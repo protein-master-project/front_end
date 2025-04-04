@@ -1,23 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { PDBLoader } from 'three/addons/loaders/PDBLoader.js';
-import { getPdbBlobURL } from "./services/ProteinService"
 
-const ContactMatrixViewer = ({ pdbId, threshold = 10.0, width = 500, height = 500 }) => {
-  const canvasRef = useRef(null);
+const ContactMatrixViewer = ({ pdbUrl, pdbId, threshold = 10.0, width = 500, height = 500, onAtomSelect }) => {
+  const canvasRef = useRef(null);  
 
   useEffect(() => {
-    if (!pdbId) return;
+    if (!pdbUrl) return;
     const pdbLoader = new PDBLoader();
-  
+
     const loadPdb = async () => {
       try {
-        console.log("pdbId:" + pdbId);
-        const url = await getPdbBlobURL(pdbId); 
-        // console.log(url);
   
         pdbLoader.load(
-          url,
+          pdbUrl,
           (pdb) => {
             const atoms = pdb.json.atoms;
             const numAtoms = atoms.length;
@@ -58,6 +54,7 @@ const ContactMatrixViewer = ({ pdbId, threshold = 10.0, width = 500, height = 50
             }
   
             ctx.putImageData(imageData, 0, 0);
+            canvas.addEventListener('click', handleCanvasClick);
           },
           (xhr) => {
             if (xhr.total) {
@@ -78,6 +75,24 @@ const ContactMatrixViewer = ({ pdbId, threshold = 10.0, width = 500, height = 50
     loadPdb();
   }, [pdbId, threshold]);
   
+  const handleCanvasClick = (event) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+  
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+  
+    const x = Math.floor((event.clientX - rect.left) * scaleX);
+    const y = Math.floor((event.clientY - rect.top) * scaleY);
+  
+    console.log(`Clicked matrix at [${y}, ${x}]`);
+  
+    if (typeof onAtomSelect === 'function') {
+      onAtomSelect([y, x]);
+    }
+  };
+
 
   return (
     <canvas

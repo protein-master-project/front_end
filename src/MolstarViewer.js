@@ -6,9 +6,23 @@ import { renderReact18 } from './molstar-lib/node_modules/molstar/lib/mol-plugin
 import { DefaultPluginUISpec, PluginUISpec } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/spec';
 import './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/skin/light.scss';
 
-const MolstarViewer = ({ pdbId, viewType, height, width, enableVolumeStreaming = false }) => {
+import { ColorNames } from './molstar-lib/node_modules/molstar/lib/mol-util/color/names';
+import { PluginCommands } from './molstar-lib/node_modules/molstar/lib/mol-plugin/commands';
+import { Script } from './molstar-lib/node_modules/molstar/lib/mol-script/script';
+import { StructureSelection } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query';
+import { QueryContext } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query/context';
+
+import {
+  Structure,
+  StructureProperties,
+} from "./molstar-lib/node_modules/molstar/lib/mol-model/structure"
+import { atoms } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query/queries/generators';
+
+
+const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStreaming = false, highlightAtoms=[] }) => {
   const containerRef = useRef(null);
   const pluginRef = useRef(null);
+  const structureRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -52,11 +66,11 @@ const MolstarViewer = ({ pdbId, viewType, height, width, enableVolumeStreaming =
 
       try {
         // Default PDB ID if none provided
-        const id = pdbId || '3PTB';
+        // const id = pdbId || '3PTB';
         
         // Fetch the structure from PDB
         const data = await plugin.builders.data.download(
-          { url: `https://files.rcsb.org/download/${id}.pdb` },
+          { url: pdbUrl },
           { state: { isGhost: true } }
         );
         
@@ -65,7 +79,9 @@ const MolstarViewer = ({ pdbId, viewType, height, width, enableVolumeStreaming =
         
         // Set the visual representation based on viewType
         const preset = viewType === 'surface' ? 'molecular-surface' : 'default';
-        await plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
+        const model = await plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
+
+        structureRef.current = model;
       } catch (error) {
         console.error('Error loading protein structure:', error);
       }
@@ -78,9 +94,24 @@ const MolstarViewer = ({ pdbId, viewType, height, width, enableVolumeStreaming =
       if (pluginRef.current) {
         pluginRef.current.dispose();
         pluginRef.current = null;
+        // structureRef.current = null;
       }
     };
   }, [pdbId, viewType, enableVolumeStreaming]);
+
+
+
+  useEffect(() => {
+    console.log("highlight:"+highlightAtoms)
+
+    const plugin = pluginRef.current;
+    const structure = structureRef.current;
+    // if (!plugin || !structure || highlightAtoms.length === 0) return;
+    
+  }, [highlightAtoms]);
+
+
+
 
   return (
     <div
