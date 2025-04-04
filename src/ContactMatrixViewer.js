@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { PDBLoader } from 'three/addons/loaders/PDBLoader.js';
 
@@ -8,235 +8,272 @@ const ContactMatrixViewer = ({
   threshold = 10.0,
   width = 500,
   height = 500,
-  highLightAtomRange,
 }) => {
   const canvasRef = useRef(null);
+  const baseMatrixCanvasRef = useRef(document.createElement('canvas'));
   const [atomCount, setAtomCount] = useState(0);
   const [atomsData, setAtomsData] = useState([]);
-  const [cachedImageData, setCachedImageData] = useState(null);
-  const [selection, setSelection] = useState(null);       // For drag selection (range)
-  const [selectedCell, setSelectedCell] = useState(null); // For single-cell (click) selection
-
-  // Load PDB file and generate contact matrix image data
+  const [selectedCell, setSelectedCell] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  // Initialize the PDB data and base matrix
   useEffect(() => {
     if (!pdbUrl) return;
-
+    
+    setIsLoading(true);
+    setErrorMessage('');
+    
     const pdbLoader = new PDBLoader();
-
-    const loadPdb = async () => {
-      try {
-        pdbLoader.load(
-          pdbUrl,
-          (pdb) => {
-            const atoms = pdb.json.atoms;
-            setAtomsData(atoms);
-            const totalAtoms = atoms.length;
-            setAtomCount(totalAtoms);
-
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            // Set canvas dimensions to match the number of atoms (1:1 pixel matrix)
-            canvas.width = totalAtoms;
-            canvas.height = totalAtoms;
-
-            const imageData = ctx.createImageData(totalAtoms, totalAtoms);
-
-            // Compute distance between each pair of atoms and set pixel color accordingly
-            for (let i = 0; i < totalAtoms; i++) {
-              const [xi, yi, zi] = atoms[i];
-              for (let j = 0; j < totalAtoms; j++) {
-                const [xj, yj, zj] = atoms[j];
-                const dx = xi - xj;
-                const dy = yi - yj;
-                const dz = zi - zj;
-                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                const pixelIndex = (i * totalAtoms + j) * 4;
-
-                if (distance < threshold) {
-                  const intensity = Math.floor(((threshold - distance) / threshold) * 255);
-                  imageData.data[pixelIndex] = 255;
-                  imageData.data[pixelIndex + 1] = 255 - intensity;
-                  imageData.data[pixelIndex + 2] = 255 - intensity;
-                  imageData.data[pixelIndex + 3] = 255;
-                } else {
-                  imageData.data[pixelIndex] = 255;
-                  imageData.data[pixelIndex + 1] = 255;
-                  imageData.data[pixelIndex + 2] = 255;
-                  imageData.data[pixelIndex + 3] = 255;
-                }
+    
+    // Load and process PDB data
+    pdbLoader.load(
+      pdbUrl,
+      (pdb) => {
+        try {
+          const atoms = pdb.json.atoms;
+          setAtomsData(atoms);
+          const totalAtoms = atoms.length;
+          setAtomCount(totalAtoms);
+          
+          // Initialize the offscreen base canvas
+          const baseCanvas = baseMatrixCanvasRef.current;
+          baseCanvas.width = totalAtoms;
+          baseCanvas.height = totalAtoms;
+          const baseCtx = baseCanvas.getContext('2d', { alpha: false });
+          
+          // Create contact matrix on the base canvas
+          const imageData = baseCtx.createImageData(totalAtoms, totalAtoms);
+          
+          // Compute the contact matrix (distance-based coloring)
+          for (let i = 0; i < totalAtoms; i++) {
+            const [xi, yi, zi] = atoms[i];
+            for (let j = 0; j < totalAtoms; j++) {
+              const [xj, yj, zj] = atoms[j];
+              const dx = xi - xj;
+              const dy = yi - yj;
+              const dz = zi - zj;
+              const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+              const pixelIndex = (i * totalAtoms + j) * 4;
+              
+              if (distance < threshold) {
+                const intensity = Math.floor(((threshold - distance) / threshold) * 255);
+                imageData.data[pixelIndex] = 255;         // R
+                imageData.data[pixelIndex + 1] = 255 - intensity; // G
+                imageData.data[pixelIndex + 2] = 255 - intensity; // B
+                imageData.data[pixelIndex + 3] = 255;     // A
+              } else {
+                // White for atoms beyond threshold distance
+                imageData.data[pixelIndex] = 255;     // R
+                imageData.data[pixelIndex + 1] = 255; // G
+                imageData.data[pixelIndex + 2] = 255; // B
+                imageData.data[pixelIndex + 3] = 255; // A
               }
             }
-
-            // Cache the generated image data for later redraws
-            setCachedImageData(imageData);
-            ctx.putImageData(imageData, 0, 0);
-          },
-          (xhr) => {
-            if (xhr.total) {
-              console.log(`${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
-            } else {
-              console.log('Loading...');
-            }
-          },
-          (error) => {
-            console.error('Error loading the PDB file:', error);
           }
-        );
-      } catch (error) {
-        console.error('Failed to load PDB file:', error);
+          
+          // Put the base matrix on the offscreen canvas
+          baseCtx.putImageData(imageData, 0, 0);
+          
+          // Initial render
+          renderCanvas();
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error processing PDB data:', error);
+          setErrorMessage('Error processing protein data.');
+          setIsLoading(false);
+        }
+      },
+      (xhr) => {
+        const progress = xhr.total ? (xhr.loaded / xhr.total * 100).toFixed(0) : 'unknown';
+        console.log(`Loading PDB: ${progress}%`);
+      },
+      (error) => {
+        console.error('Error loading PDB file:', error);
+        setErrorMessage('Failed to load protein data.');
+        setIsLoading(false);
       }
+    );
+    
+    // Cleanup function
+    return () => {
+      // Cancel any pending operations if needed
     };
-
-    loadPdb();
   }, [pdbUrl, pdbId, threshold]);
-
-  // Create a drawOverlay function that always uses the latest state.
-  const drawOverlay = useCallback(() => {
+  
+  // Main render function for the visible canvas
+  const renderCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas || !cachedImageData) return;
-    const ctx = canvas.getContext('2d');
-    // Redraw the cached contact matrix image
-    ctx.putImageData(cachedImageData, 0, 0);
-
-    // Draw drag selection overlay if present
-    if (selection) {
-      const { startX, endX } = selection;
-      const rectWidth = endX - startX;
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
-      ctx.fillRect(startX, 0, rectWidth, canvas.height);
-      ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(startX + 0.5, 0.5, rectWidth - 1, canvas.height - 1);
+    const baseCanvas = baseMatrixCanvasRef.current;
+    
+    if (!canvas || baseCanvas.width === 0) return;
+    
+    const ctx = canvas.getContext('2d', { alpha: false });
+    
+    // First, ensure canvas has the right dimensions
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
     }
-
-    // If a single-cell selection exists, draw crosshairs and display the distance
-    if (selectedCell) {
-      ctx.strokeStyle = 'blue';
-      ctx.lineWidth = 1;
-
-      // Draw vertical line at selectedCell.x
+    
+    // Clear canvas with white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw the base contact matrix (scaled to fit)
+    if (baseCanvas.width > 0) {
+      ctx.imageSmoothingEnabled = false; // Keep pixelated look
+      ctx.drawImage(baseCanvas, 0, 0, baseCanvas.width, baseCanvas.height, 
+                    0, 0, canvas.width, canvas.height);
+    }
+    
+    // Draw crosshair if a cell is selected
+    if (selectedCell && atomsData.length > 0) {
+      const scaleX = canvas.width / atomCount;
+      const scaleY = canvas.height / atomCount;
+      
+      // Convert data coordinates to screen coordinates
+      const screenX = selectedCell.dataX * scaleX;
+      const screenY = selectedCell.dataY * scaleY;
+      
+      // Draw crosshair
+      ctx.save();
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      
+      // Draw as a single path for consistent rendering
       ctx.beginPath();
-      ctx.moveTo(selectedCell.x + 0.5, 0);
-      ctx.lineTo(selectedCell.x + 0.5, canvas.height);
+      // Vertical line
+      ctx.moveTo(screenX, 0);
+      ctx.lineTo(screenX, canvas.height);
+      // Horizontal line
+      ctx.moveTo(0, screenY);
+      ctx.lineTo(canvas.width, screenY);
       ctx.stroke();
-
-      // Draw horizontal line at selectedCell.y
-      ctx.beginPath();
-      ctx.moveTo(0, selectedCell.y + 0.5);
-      ctx.lineTo(canvas.width, selectedCell.y + 0.5);
-      ctx.stroke();
-
-      // Compute and display the Euclidean distance between the two atoms
-      if (atomsData.length > selectedCell.x && atomsData.length > selectedCell.y) {
-        const [xi, yi, zi] = atomsData[selectedCell.x];
-        const [xj, yj, zj] = atomsData[selectedCell.y];
+      
+      // Add a highlight box at intersection
+      ctx.strokeRect(screenX - 4, screenY - 4, 8, 8);
+      
+      // Show distance
+      if (selectedCell.dataX < atomsData.length && selectedCell.dataY < atomsData.length) {
+        const [xi, yi, zi] = atomsData[selectedCell.dataX];
+        const [xj, yj, zj] = atomsData[selectedCell.dataY];
         const dx = xi - xj;
         const dy = yi - yj;
         const dz = zi - zj;
         const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        ctx.fillStyle = 'blue';
-        // Increase font size for better visibility
-        ctx.font = '120px Arial';
-        ctx.fillText(distance.toFixed(2), selectedCell.x + 5, selectedCell.y - 5);
+        
+        // Draw distance value with a background for better visibility
+        const text = `${distance.toFixed(2)}`;
+        ctx.font = '16px Arial';
+        const textWidth = ctx.measureText(text).width;
+        
+        // Position text away from the edges
+        let textX = screenX + 10;
+        let textY = screenY - 10;
+        
+        // Keep text within bounds
+        if (textX + textWidth + 10 > canvas.width) textX = screenX - textWidth - 10;
+        if (textY < 20) textY = screenY + 25;
+        
+        // Draw text background
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillRect(textX - 2, textY - 16, textWidth + 4, 20);
+        
+        // Draw text
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillText(text, textX, textY);
       }
+      
+      ctx.restore();
     }
-  }, [cachedImageData, selection, selectedCell, atomsData]);
-
-  // Trigger a redraw whenever dependent state changes
+  };
+  
+  // Re-render when selectedCell changes
   useEffect(() => {
-    drawOverlay();
-  }, [drawOverlay]);
-
-  // Handle mouse interactions for drag vs. click selection
+    if (canvasRef.current) {
+      renderCanvas();
+    }
+  }, [selectedCell, atomsData, atomCount]);
+  
+  // Handle click events on the canvas
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    let isDragging = false;
-    let dragStartX = null;
-    let dragStartY = null;
-    let currentX = null;
-    let currentY = null;
-    let hasDragged = false;
-
-    const handleMouseDown = (e) => {
+    if (!canvas || atomCount === 0) return;
+    
+    const handleClick = (e) => {
       const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      dragStartX = Math.floor((e.clientX - rect.left) * scaleX);
-      dragStartY = Math.floor((e.clientY - rect.top) * scaleY);
-      currentX = dragStartX;
-      currentY = dragStartY;
-      isDragging = true;
-      hasDragged = false;
-    };
-
-    const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      currentX = Math.floor((e.clientX - rect.left) * scaleX);
-      currentY = Math.floor((e.clientY - rect.top) * scaleY);
-      // Increase threshold to avoid accidental drags
-      if (Math.abs(currentX - dragStartX) > 5 || Math.abs(currentY - dragStartY) > 5) {
-        hasDragged = true;
+      
+      // Get click position in canvas coordinates
+      const canvasX = e.clientX - rect.left;
+      const canvasY = e.clientY - rect.top;
+      
+      // Convert to data coordinates
+      const dataX = Math.floor((canvasX / canvas.width) * atomCount);
+      const dataY = Math.floor((canvasY / canvas.height) * atomCount);
+      
+      // Check bounds
+      if (dataX >= 0 && dataX < atomCount && dataY >= 0 && dataY < atomCount) {
+        setSelectedCell({
+          dataX: dataX,
+          dataY: dataY,
+        });
       }
-      drawOverlay();
     };
-
-    const handleMouseUp = (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const dragEndX = Math.floor((e.clientX - rect.left) * scaleX);
-      const dragEndY = Math.floor((e.clientY - rect.top) * scaleY);
-
-      if (!hasDragged) {
-        // Single click selection: update selectedCell (this triggers a redraw via our effect)
-        setSelectedCell({ x: dragStartX, y: dragStartY });
-        setSelection(null);
-      } else {
-        // Drag selection: use horizontal range for selection
-        const start = Math.min(dragStartX, dragEndX);
-        const end = Math.max(dragStartX, dragEndX);
-        setSelection({ startX: start, endX: end });
-        setSelectedCell(null);
-        if (typeof highLightAtomRange === 'function') {
-          highLightAtomRange([start, end]);
-        }
-      }
-      // Call drawOverlay in case the state change is not immediate
-      drawOverlay();
-    };
-
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-
+    
+    canvas.addEventListener('click', handleClick);
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('click', handleClick);
     };
-  }, [drawOverlay, highLightAtomRange]);
-
+  }, [atomCount]);
+  
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      renderCanvas();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        width: width,
-        height: height,
-        border: '1px solid #ccc',
-        imageRendering: 'pixelated',
-        cursor: 'crosshair',
-      }}
-    />
+    <div className="contact-matrix-viewer" style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      padding: '2px 0'
+    }}>
+      {isLoading && <div className="loading-indicator">Loading protein data...</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        style={{
+          display: 'block',
+          border: '1px solid #ccc',
+          imageRendering: 'pixelated',
+          cursor: 'crosshair',
+          margin: '0 auto',  // Center horizontally
+        }}
+      />
+      
+      {selectedCell && atomsData.length > 0 && (
+        <div className="selection-info" style={{ 
+          marginTop: '2px', 
+          fontSize: '14px',
+          textAlign: 'center' 
+        }}>
+          Selected: Atom {selectedCell.dataX} ↔ Atom {selectedCell.dataY}
+        </div>
+      )}
+    </div>
   );
 };
 
