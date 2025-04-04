@@ -10,7 +10,7 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(null);
 
-  const [selectedAtoms, setSelectedAtoms] = useState([]);
+  const [selectedAtomRange, setSelectedAtomRange] = useState([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -104,7 +104,7 @@ const ResultsPage = () => {
                     pdbUrl={proteinData.pdbBlobUrl} 
                     viewType="structure"
                     height="250px"
-                    highlightAtoms={selectedAtoms}
+                    highLightAtomRange={selectedAtomRange}
                   />
                 </div>
               </div>
@@ -127,8 +127,8 @@ const ResultsPage = () => {
                     threshold={10.0}
                     width={250}
                     height={250}
-                    onAtomSelect={(atomPair) => {
-                      setSelectedAtoms(atomPair);
+                    highLightAtomRange={(atomPair) => {
+                      setSelectedAtomRange(atomPair);
                     }}
                   />
                 </div>
