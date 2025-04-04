@@ -6,19 +6,6 @@ import { renderReact18 } from './molstar-lib/node_modules/molstar/lib/mol-plugin
 import { DefaultPluginUISpec, PluginUISpec } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/spec';
 import './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/skin/light.scss';
 
-import { ColorNames } from './molstar-lib/node_modules/molstar/lib/mol-util/color/names';
-import { PluginCommands } from './molstar-lib/node_modules/molstar/lib/mol-plugin/commands';
-import { Script } from './molstar-lib/node_modules/molstar/lib/mol-script/script';
-import { StructureSelection } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query';
-import { QueryContext } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query/context';
-
-import {
-  Structure,
-  StructureProperties,
-} from "./molstar-lib/node_modules/molstar/lib/mol-model/structure"
-import { atoms } from './molstar-lib/node_modules/molstar/lib/mol-model/structure/query/queries/generators';
-
-
 const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStreaming = false, highlightAtoms=[] }) => {
   const containerRef = useRef(null);
   const pluginRef = useRef(null);
