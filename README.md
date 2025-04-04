@@ -28,6 +28,8 @@ This is a **prototype** frontend; it does not currently have a backend. The appl
     npm start
 4. Open http://localhost:3000 in your browser to see the application.
 
+> To integrate the frontend and backend, you should launch the backend first. For backend, please refer to [link](https://github.com/protein-master-project/protein-master). 
+
 ## Key components
 
 1. **SearchPage.js**  
