@@ -7,18 +7,19 @@ import { DefaultPluginUISpec, PluginUISpec } from 'molstar/lib/mol-plugin-ui/spe
 import 'molstar/lib/mol-plugin-ui/skin/light.scss';
 
 import { MolScriptBuilder as MS, MolScriptBuilder } from 'molstar/lib/mol-script/language/builder';
-import { Expression } from 'molstar/lib/mol-script/language/expression';
-import {  StructureSelectionQuery } from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query'
-
-import { atoms } from 'molstar/lib/mol-model/structure/query/queries/generators';
-import { QueryContext } from 'molstar/lib/mol-model/structure/query/context';
-import { Structure, StructureProperties, StructureElement } from 'molstar/lib/mol-model/structure';
-
-import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
-import { SetUtils } from 'molstar/lib/mol-util/set';
-import { ProteinBackboneAtoms } from 'molstar/lib/mol-model/structure/model/types';
 import { Script } from 'molstar/lib/mol-script/script';
 import { StructureSelection } from 'molstar/lib/mol-model/structure/query';
+// import { Expression } from 'molstar/lib/mol-script/language/expression';
+// import {  StructureSelectionQuery } from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query'
+
+// import { atoms } from 'molstar/lib/mol-model/structure/query/queries/generators';
+// import { QueryContext } from 'molstar/lib/mol-model/structure/query/context';
+// import { Structure, StructureProperties, StructureElement } from 'molstar/lib/mol-model/structure';
+
+// import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
+// import { SetUtils } from 'molstar/lib/mol-util/set';
+// import { ProteinBackboneAtoms } from 'molstar/lib/mol-model/structure/model/types';
+
 
 
 const MolstarViewer = ({ 
