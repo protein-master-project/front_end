@@ -4,13 +4,19 @@ import MolstarViewer from './MolstarViewer';
 import MatrixViewer from './MatrixViewer';
 import ContactMatrixViewer from './ContactMatrixViewer';
 import { getPdbBlobURL } from "./services/ProteinService"
+import ProteinData from './ProteinData'
 
 const ResultsPage = () => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [proteinData, setProteinData] = useState(null);
+  const [proteinData, setProteinData] = useState(new ProteinData());
 
-  const [selectedAtomRange, setSelectedAtomRange] = useState([]);
+  const handleProteinDataUpdate = (newData) => {
+    setProteinData(prevData => ({
+      ...prevData,
+      ...newData,
+    }));
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -25,15 +31,26 @@ const ResultsPage = () => {
       let pdbBlobUrl =await getPdbBlobURL(pdbId);
 
       setTimeout(() => {
-      
-        setProteinData({
-          name: searchQuery || 'Trypsin',
-          id: pdbId,
-          description: `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
-          pdbId: pdbId,
-          pdbBlobUrl: pdbBlobUrl
-        });
+        // setProteinData({
+        //   name: searchQuery || 'Trypsin',
+        //   id: pdbId,
+        //   description: `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
+        //   pdbId: pdbId,
+        //   pdbBlobUrl: pdbBlobUrl
+        // }
+        // );
         
+        const newProteinData = new ProteinData(
+          searchQuery || 'Trypsin',
+          `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
+          pdbBlobUrl,
+          pdbId,
+          [], 
+          []
+        );
+
+        console.log(newProteinData);
+        setProteinData(newProteinData);
         setLoading(false);
       }, 1000);
       
@@ -101,10 +118,10 @@ const ResultsPage = () => {
                 <div className="protein-image">
                   <MolstarViewer 
                     pdbId={proteinData.pdbId} 
-                    pdbUrl={proteinData.pdbBlobUrl} 
+                    pdbUrl={proteinData.pdbUrl} 
+                    proteinData={proteinData}
                     viewType="structure"
                     height="250px"
-                    highLightAtomRange={selectedAtomRange}
                   />
                 </div>
               </div>
@@ -122,14 +139,13 @@ const ResultsPage = () => {
                 <div className="image-header">Contact Matrix</div>
                 <div className="protein-image">
                   <ContactMatrixViewer 
-                    pdbUrl={proteinData.pdbBlobUrl}
+                    pdbUrl={proteinData.pdbUrl}
                     pdbId={proteinData.pdbId}
                     threshold={10.0}
                     width={250}
                     height={250}
-                    highLightAtomRange={(atomPair) => {
-                      setSelectedAtomRange(atomPair);
-                    }}
+                    proteinData={proteinData}
+                    proteinDataUpdateHandle={handleProteinDataUpdate}
                   />
                 </div>
               </div>

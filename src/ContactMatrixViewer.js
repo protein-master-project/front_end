@@ -8,6 +8,8 @@ const ContactMatrixViewer = ({
   threshold = 10.0,
   width = 500,
   height = 500,
+  proteinData=null,
+  proteinDataUpdateHandle=null,
 }) => {
   const canvasRef = useRef(null);
   const baseMatrixCanvasRef = useRef(document.createElement('canvas'));
@@ -217,6 +219,14 @@ const ContactMatrixViewer = ({
         setSelectedCell({
           dataX: dataX,
           dataY: dataY,
+        });
+      }
+
+      if (typeof proteinDataUpdateHandle === 'function') {
+        console.log("selected atoms, X: " + dataX + "Y: " + dataY)
+        proteinDataUpdateHandle({ 
+          selectedAtomRange: null,
+          selectedAtom: [dataX, dataY] 
         });
       }
     };

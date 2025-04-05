@@ -6,7 +6,14 @@ import { renderReact18 } from './molstar-lib/node_modules/molstar/lib/mol-plugin
 import { DefaultPluginUISpec, PluginUISpec } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/spec';
 import './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/skin/light.scss';
 
-const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStreaming = false, highLightAtomRange=[] }) => {
+const MolstarViewer = ({ 
+  pdbUrl, 
+  pdbId, 
+  proteinData,
+  viewType, 
+  height, 
+  width, 
+  enableVolumeStreaming = false}) => {
   const containerRef = useRef(null);
   const pluginRef = useRef(null);
   const structureRef = useRef(null);
@@ -88,10 +95,14 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
 
 
 
-  useEffect(() => {
-    // TODO: highlight
-    console.log("highlight range: from "+highLightAtomRange[0] + " to "+highLightAtomRange[1])
-
+  useEffect(() => {    
+    if(proteinData.selectedAtomRange != null){
+      console.log("highlight atom range, from " + proteinData.selectedAtomRange[0]+ "to "+ proteinData.selectedAtomRange[1])
+    }
+    else if(proteinData.selectedAtom != null){
+      console.log("highlight atoms:" + proteinData.selectedAtom)
+    }
+    
     const plugin = pluginRef.current;
     const structure = structureRef.current;
 
@@ -99,7 +110,7 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
     // if (!plugin || !structure || highlightAtoms.length === 0) return;
 
 
-  }, [highLightAtomRange]);
+  }, [proteinData]);
 
 
 
