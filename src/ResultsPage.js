@@ -8,6 +8,7 @@ import ProteinData from './ProteinData'
 
 const ResultsPage = () => {
   const [query, setQuery] = useState('');
+  const [miniSearchQuery, setMiniSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(new ProteinData());
 
@@ -22,24 +23,16 @@ const ResultsPage = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const searchQuery = urlParams.get('query');
     setQuery(searchQuery);
+    setMiniSearchQuery(searchQuery); // Initialize mini search with current query
     
     const fetchData = async () => {
       setLoading(true);
       
       const proteinId = searchQuery?.toLowerCase() || 'unknown';
       let pdbId = searchQuery; 
-      let pdbBlobUrl =await getPdbBlobURL(pdbId);
+      let pdbBlobUrl = await getPdbBlobURL(pdbId);
 
       setTimeout(() => {
-        // setProteinData({
-        //   name: searchQuery || 'Trypsin',
-        //   id: pdbId,
-        //   description: `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
-        //   pdbId: pdbId,
-        //   pdbBlobUrl: pdbBlobUrl
-        // }
-        // );
-        
         const newProteinData = new ProteinData(
           searchQuery || 'Trypsin',
           `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
@@ -53,22 +46,21 @@ const ResultsPage = () => {
         setProteinData(newProteinData);
         setLoading(false);
       }, 1000);
-      
     };
     
     fetchData();
   }, []);
   
-  const handleNewSearch = () => {
-    window.location.href = '/';
+  const handleMiniSearchChange = (e) => {
+    setMiniSearchQuery(e.target.value);
   };
 
-  // const sampleMatrix = [
-  //   [0.1, 0.2, 0.5, 0.8],
-  //   [0.3, 0.6, 0.7, 0.9],
-  //   [0.4, 0.2, 0.1, 0.3],
-  //   [0.9, 0.8, 0.7, 0.4]
-  // ];
+  const handleNewSearch = () => {
+    if (miniSearchQuery && miniSearchQuery.trim() !== '') {
+      // Redirect to the results page with the new query parameter
+      window.location.href = `/results?query=${encodeURIComponent(miniSearchQuery)}`;
+    }
+  };
   
   if (loading) {
     return (
@@ -91,8 +83,10 @@ const ResultsPage = () => {
           <div className="search-bar">
             <input
               type="text"
-              defaultValue={query}
+              value={miniSearchQuery}
+              onChange={handleMiniSearchChange}
               className="search-input-small"
+              onKeyPress={(e) => e.key === 'Enter' && handleNewSearch()}
             />
             <button 
               onClick={handleNewSearch}
@@ -112,38 +106,28 @@ const ResultsPage = () => {
           
           <div className="visualization-section">
             <h3 className="section-title">Protein Visualization</h3>
-            <div className="image-grid">
-              <div className="image-card">
-                <div className="image-header">Structure View</div>
-                <div className="protein-image">
+            <div className="visualization-grid">
+              <div className="visualization-card">
+                <div className="visualization-header">Structure View</div>
+                <div className="protein-visualization">
                   <MolstarViewer 
                     pdbId={proteinData.pdbId} 
                     pdbUrl={proteinData.pdbUrl} 
                     proteinData={proteinData}
                     viewType="structure"
-                    height="250px"
+                    height="350px"
                   />
                 </div>
               </div>
-              {/* <div className="image-card">
-                <div className="image-header">Surface View</div>
-                <div className="protein-image">
-                  <MatrixViewer 
-                    matrix={sampleMatrix}
-                    cellSize={30}
-                    colorRange={{ min: 0, max: 1 }}
-                  />
-                </div>
-              </div> */}
-              <div className="image-card">
-                <div className="image-header">Contact Matrix</div>
-                <div className="protein-image">
+              <div className="visualization-card">
+                <div className="visualization-header">Contact Matrix</div>
+                <div className="protein-visualization">
                   <ContactMatrixViewer 
                     pdbUrl={proteinData.pdbUrl}
                     pdbId={proteinData.pdbId}
                     threshold={10.0}
-                    width={250}
-                    height={250}
+                    width={350}
+                    height={350}
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}
                   />
