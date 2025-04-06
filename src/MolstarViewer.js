@@ -1,12 +1,35 @@
 // MolstarViewer.js
 import React, { useEffect, useRef } from 'react';
-import { PluginConfig } from './molstar-lib/node_modules/molstar/lib/mol-plugin/config';
-import { createPluginUI } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui';
-import { renderReact18 } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/react18';
-import { DefaultPluginUISpec, PluginUISpec } from './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/spec';
-import './molstar-lib/node_modules/molstar/lib/mol-plugin-ui/skin/light.scss';
+import { PluginConfig } from 'molstar/lib/mol-plugin/config';
+import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
+import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18';
+import { DefaultPluginUISpec, PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
+import 'molstar/lib/mol-plugin-ui/skin/light.scss';
 
-const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStreaming = false, highLightAtomRange=[] }) => {
+import { MolScriptBuilder as MS, MolScriptBuilder } from 'molstar/lib/mol-script/language/builder';
+import { Script } from 'molstar/lib/mol-script/script';
+import { StructureSelection } from 'molstar/lib/mol-model/structure/query';
+// import { Expression } from 'molstar/lib/mol-script/language/expression';
+// import {  StructureSelectionQuery } from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query'
+
+// import { atoms } from 'molstar/lib/mol-model/structure/query/queries/generators';
+// import { QueryContext } from 'molstar/lib/mol-model/structure/query/context';
+// import { Structure, StructureProperties, StructureElement } from 'molstar/lib/mol-model/structure';
+
+// import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
+// import { SetUtils } from 'molstar/lib/mol-util/set';
+// import { ProteinBackboneAtoms } from 'molstar/lib/mol-model/structure/model/types';
+
+
+
+const MolstarViewer = ({ 
+  pdbUrl, 
+  pdbId, 
+  proteinData,
+  viewType, 
+  height, 
+  width, 
+  enableVolumeStreaming = false}) => {
   const containerRef = useRef(null);
   const pluginRef = useRef(null);
   const structureRef = useRef(null);
@@ -51,10 +74,7 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
 
       pluginRef.current = plugin;
 
-      try {
-        // Default PDB ID if none provided
-        // const id = pdbId || '3PTB';
-        
+      try {        
         // Fetch the structure from PDB
         const data = await plugin.builders.data.download(
           { url: pdbUrl },
@@ -66,9 +86,9 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
         
         // Set the visual representation based on viewType
         const preset = viewType === 'surface' ? 'molecular-surface' : 'default';
-        const model = await plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
+        await plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
 
-        structureRef.current = model.structure;
+        structureRef.current = plugin;
       } catch (error) {
         console.error('Error loading protein structure:', error);
       }
@@ -78,28 +98,70 @@ const MolstarViewer = ({ pdbUrl, pdbId, viewType, height, width, enableVolumeStr
 
     return () => {
       mounted = false;
-      if (pluginRef.current) {
-        pluginRef.current.dispose();
-        pluginRef.current = null;
-        // structureRef.current = null;
-      }
+      // if (pluginRef.current) {
+      //   pluginRef.current.dispose();
+      //   pluginRef.current = null;
+      //   structureRef.current = null;
+      // }
     };
   }, [pdbId, viewType, enableVolumeStreaming]);
 
 
 
-  useEffect(() => {
-    // TODO: highlight
-    console.log("highlight range: from "+highLightAtomRange[0] + " to "+highLightAtomRange[1])
-
+  useEffect(() => {    
     const plugin = pluginRef.current;
     const structure = structureRef.current;
+    console.log(structure)
+    if (!plugin || !structure) return;
 
-    // console.log(structure)
-    // if (!plugin || !structure || highlightAtoms.length === 0) return;
 
 
-  }, [highLightAtomRange]);
+    if(proteinData.selectedAtomRange != null){
+      console.log("highlight atom range, from " + proteinData.selectedAtomRange[0]+ "to "+ proteinData.selectedAtomRange[1])
+    }
+    else if(proteinData.selectedAtom != null){
+      console.log("highlight atoms:" + proteinData.selectedAtom)
+
+      
+      // Examples:
+      // https://github.com/molstar/molstar/blob/master/src/mol-script/script/mol-script/examples.ts
+      // https://github.com/molstar/molstar/blob/6edbae80db340134341631f669eec86543a0f1a8/src/mol-plugin-state/helpers/structure-selection-query.ts#L88-L580
+
+      // some examples for future refer
+      // const Q = MolScriptBuilder;
+      // const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+      //     'chain-test': Q.core.rel.eq(
+      //       [Q.struct.atomProperty.macromolecular.entityKey(), 1]
+      //     ),
+      // }), data);
+
+      // const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+      //   'atom-test': MS.core.set.has([MS.set('OD', 'NZ'), MS.ammp('label_atom_id')])
+      // }), data);
+
+      // const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+      //   'atom-test': MS.core.rel.eq([MS.ammp('id'), proteinData.selectedAtom[0]]),
+      // }), data);
+
+      const data = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+      if (!data) return;
+
+      const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+        'atom-test': MS.core.set.has([MS.set(proteinData.selectedAtom[0], proteinData.selectedAtom[1]), MS.ammp('id')]),
+      }), data);
+
+      const loci = StructureSelection.toLociWithSourceUnits(selection);   
+      
+      plugin.managers.interactivity.lociSelects.deselectAll();
+      plugin.managers.interactivity.lociSelects.select({ loci: loci });
+      // plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }); 
+    }
+    
+    
+
+
+
+  }, [proteinData]);
 
 
 
