@@ -53,3 +53,51 @@ export async function getPdbBlobURL(pdbId: string, db: string = 'rcsb'): Promise
     return '';
   }
 }
+
+
+
+/**
+ * alignProteins
+ * 调用后端 `/align`，拿到两个 PDB 文本（已对齐）
+ */
+export interface AlignResult {
+  aligned1: string;
+  aligned2: string;
+}
+export async function alignProteins(
+  pdb1Id: string,
+  pdb2Id: string,
+  db: string = 'rcsb'
+): Promise<AlignResult> {
+  const url = `${BACKEND_BASE_URL}/align?` +
+    `pdb1_id=${encodeURIComponent(pdb1Id)}` +
+    `&pdb2_id=${encodeURIComponent(pdb2Id)}` +
+    `&db=${encodeURIComponent(db)}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Align failed with status ${response.status}`);
+  }
+  // { aligned1: "...", aligned2: "..." }
+  return response.json();
+}
+
+/**
+ * getAlignedPdbBlobURLs
+ * 将对齐后的 PDB 文本打包成两个 Blob URL
+ */
+export async function getAlignedPdbBlobURLs(
+  pdb1Id: string,
+  pdb2Id: string,
+  db: string = 'rcsb'
+): Promise<[string, string]> {
+  const { aligned1, aligned2 } = await alignProteins(pdb1Id, pdb2Id, db);
+
+  const blob1 = new Blob([aligned1], { type: 'text/plain' });
+  const blob2 = new Blob([aligned2], { type: 'text/plain' });
+
+  return [
+    URL.createObjectURL(blob1),
+    URL.createObjectURL(blob2),
+  ];
+}
