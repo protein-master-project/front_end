@@ -58,7 +58,7 @@ export async function getPdbBlobURL(pdbId: string, db: string = 'rcsb'): Promise
 
 /**
  * alignProteins
- * 调用后端 `/align`，拿到两个 PDB 文本（已对齐）
+ * 
  */
 export interface AlignResult {
   aligned1: string;
@@ -84,7 +84,7 @@ export async function alignProteins(
 
 /**
  * getAlignedPdbBlobURLs
- * 将对齐后的 PDB 文本打包成两个 Blob URL
+ * 
  */
 export async function getAlignedPdbBlobURLs(
   pdb1Id: string,
