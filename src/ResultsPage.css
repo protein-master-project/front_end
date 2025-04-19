@@ -53,6 +53,15 @@
   font-size: 14px;
 }
 
+.compare-button {
+  padding: 8px 15px;
+  background-color: #3366ff;
+  color: white;
+  border: none;
+  border-radius:  4px 4px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
 .results-content {
   padding: 20px;
 }
