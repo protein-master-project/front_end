@@ -4,6 +4,7 @@ import MolstarViewer from './MolstarViewer';
 import ContactMatrixViewer from './ContactMatrixViewer';
 import AlignPdbViewer from './AlignPdbViewer';
 import QueryView from './QueryView';
+import QueryAgentView from './QueryAgentView';
 import { getPdbBlobURL } from './services/ProteinService';
 import ProteinData from './ProteinData';
 
@@ -59,6 +60,16 @@ const AVAILABLE_VIEWS = [
       />
     ),
   },
+  {
+    key: 'query_ai',
+    title: 'MolScript AI Editor',
+    component: (data, onUpdate) => (
+      <QueryAgentView
+        proteinData={data}
+        proteinDataUpdateHandle={onUpdate}
+      />
+    ),
+  }
 ];
 
 const ResultsPage = () => {
@@ -205,7 +216,7 @@ const ResultsPage = () => {
                 const viewDef = AVAILABLE_VIEWS.find(v => v.key === cfg.viewKey);
                 // return (
                   // <div className="visualization-card" key={cfg.key}>
-                const isQuery = cfg.viewKey === 'query';
+                const isQuery = cfg.viewKey === 'query_ai';
                 return (
                     <div
                       className={`visualization-card ${isQuery ? 'wide' : ''}`}

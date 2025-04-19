@@ -22,111 +22,169 @@
   overflow: auto;
 }
 
-/* ------- */
-/* Two‑column layout */
-.query‑two‑col {
+/* === QueryView.css =================================================== */
+
+/* Container – two columns on desktop, one column on mobile */
+.query-two-col {
   display: flex;
-  gap: 20px;
-  height: 100%;
+  flex-direction: row;
+  gap: 1rem;
+  height: 100%;           /* let the parent decide the overall height */
+  box-sizing: border-box;
 }
 
-/* ------------- CHAT ------------- */
+@media (max-width: 900px) {   /* fall back to vertical on small screens */
+  .query-two-col {
+    flex-direction: column;
+  }
+}
+
+/* --------------------------------------------------  Chat panel  ----- */
 .chat-panel {
-  flex: 0 0 38%;
+  flex: 0 0 38rem;        /*  ~40 % (adjust as you like) */
+  max-width: 45%;
+  min-width: 20rem;       /* never shrink past this */
   display: flex;
   flex-direction: column;
   background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
+  border: 1px solid #e3e6ef;
+  border-radius: 12px;
+  overflow: hidden;       /* keeps rounded corners */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
 
+/* scrollable message list */
 .chat-history {
   flex: 1 1 auto;
-  padding: 1rem;
   overflow-y: auto;
-  background: #fafafa;
+  padding: 1rem 1.2rem;
+  background: #fafbfe;
 }
 
+/* message bubbles */
 .msg {
-  max-width: 85%;
-  margin-bottom: 0.7rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 12px;
-  line-height: 1.4;
+  max-width: 90%;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 0.6rem;
+  border-radius: 10px;
+  line-height: 1.45;
   word-break: break-word;
+  font-size: 0.94rem;
 }
 
-.msg.user {
-  margin-left: auto;
-  background: #4caf50;
-  color: #fff;
-}
+.msg.user      { background: #d0e7ff; align-self: flex-end; }
+.msg.assistant { background: #f0f1f8; }
 
-.msg.assistant {
-  margin-right: auto;
-  background: #ecf0f1;
-  color: #2c3e50;
-}
-
+/* input area */
 .chat-input {
   display: flex;
-  padding: 0.5rem;
-  border-top: 1px solid #e0e0e0;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #e3e6ef;
+  background: #fff;
 }
 
 .chat-input textarea {
   flex: 1 1 auto;
   resize: none;
-  padding: 0.6rem;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  line-height: 1.3;
+  border: 1px solid #d0d5e0;
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.94rem;
+  line-height: 1.35;
+  min-height: 2.8rem;
+  max-height: 8rem;
 }
 
 .chat-input button {
-  margin-left: 0.6rem;
-  padding: 0 1rem;
-  font-size: 0.95rem;
-  border: none;
-  background: #2980b9;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.chat-input button:disabled {
-  background: #9c9c9c;
-  cursor: not-allowed;
-}
-
-/* ------------- CODE ------------- */
-.code-panel {
-  flex: 1 1 62%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.molql-editor {
-  height: 100%;
-  flex: 1 1 auto;
-}
-
-.run-btn {
-  position: absolute;
-  bottom: 18px;
-  right: 18px;
-  background: #3366ff;
+  flex: 0 0 5.5rem;
+  background: #2563eb;
   color: #fff;
   border: none;
-  padding: 0.55rem 1.2rem;
-  border-radius: 50px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
   transition: background 0.2s;
 }
+.chat-input button:hover:not(:disabled) { background: #1e4fd1; }
+.chat-input button:disabled            { opacity: 0.4; cursor: default; }
 
-.run-btn:hover { background: #2448d8; }
+/* --------------------------------------------------  Code panel  ----- */
+.code-panel {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e3e6ef;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+/* CodeMirror fills the remaining space */
+.molql-editor {
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+/* 'Run' button anchored bottom‑right */
+.run-btn {
+  align-self: flex-end;
+  margin: 0.9rem 1rem 1.1rem;
+  padding: 0.5rem 1.25rem;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.run-btn:hover       { background: #15803d; }
+.run-btn:active      { background: #136e34; }
+
+
+
+.msg {
+  /* ... (existing styles) ... */
+  line-height: 1.5; /* Slightly adjust line-height if needed for Markdown */
+}
+
+/* Styling for code blocks rendered by react-syntax-highlighter */
+.msg div[class*="language-"] { /* Targets the PreTag="div" */
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding: 0.8em 1em !important; /* Override default padding if necessary */
+  border-radius: 6px;
+  overflow-x: auto; /* Allow horizontal scrolling for long code lines */
+  font-size: 0.88rem; /* Slightly smaller font for code */
+}
+
+/* Styling for inline code */
+.msg code {
+  background-color: rgba(0, 0, 0, 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: monospace;
+}
+
+/* Ensure code within user messages also gets basic styling if needed */
+.msg.user code {
+    background-color: rgba(0, 87, 179, 0.1); /* Slightly different bg for user inline code */
+}
+
+/* Prevent syntax highlighter style from overriding bubble background too much */
+.msg.assistant div[class*="language-"] {
+  /* Use the background from the theme (vscDarkPlus in this case) */
+  /* Or uncomment below to force a background */
+  /* background-color: #1e1e1e !important;  */
+  /* color: #d4d4d4 !important; */ /* Ensure text is readable on dark bg */
+}
+
+/* Adjust padding if code is the *only* content in the message */
+.msg > div[class*="language-"]:first-child:last-child {
+   margin: 0; /* Remove margins if it's the only element */
+   /* Adjust padding if needed to match bubble padding better */
+   /* padding: 0.55rem 0.9rem !important; */
+}

@@ -21,3 +21,18 @@ export async function sendChat(history) {
   }
   return data.messages;
 }
+
+
+export async function fetchRagPrompt() {
+  const resp = await fetch(`${BACKEND_BASE_URL}/rag`, {
+    method: 'GET',
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    throw new Error(errText || resp.statusText);
+  }
+
+  // /rag returns text/plain, so use .text()
+  return resp.text();
+}
