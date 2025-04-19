@@ -11,6 +11,8 @@ class ProteinData {
      * 
      * @param {string} queryLanguage
      * @param {string} queryCode
+     * 
+     * @param {string} secondPdbId
      */
 
     constructor(
@@ -21,13 +23,15 @@ class ProteinData {
         selectedAtomRange = [], 
         selectedAtom = [],
         queryLanguage = 'MOLQL',
-        queryCode = '') {
+        queryCode = '',
+        secondPdbId = '') {
             this.name = name;
             this.description = description;
             this.pdbUrl = url;
             this.pdbId = id;
             this.selectedAtomRange = selectedAtomRange;
             this.selectedAtom = selectedAtom;
+            this.secondPdbId = secondPdbId
     }
   }
   

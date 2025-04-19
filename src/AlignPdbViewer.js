@@ -2,7 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { alignProteins } from './services/ProteinService';  // Helper to call the backend alignment API
 
-const AlignPdbViewer = ({ pdbId, db = 'rcsb', height = '350px' }) => {
+const AlignPdbViewer = ({ 
+  pdbId, 
+  db = 'rcsb', 
+  height = '350px',
+  proteinData = null,
+  proteinDataUpdateHandle = null}) => {
   const [secondId, setSecondId] = useState('');
   const [struct1, setStruct1] = useState(null);
   const [aligned2, setAligned2] = useState(null);
@@ -33,6 +38,12 @@ const AlignPdbViewer = ({ pdbId, db = 'rcsb', height = '350px' }) => {
       const { aligned1, aligned2 } = await alignProteins(pdbId, secondId, db);
       setStruct1(aligned1);
       setAligned2(aligned2);
+
+      console.log("update secondId:" + secondId)
+      proteinDataUpdateHandle({
+        secondPdbId: secondId
+      })
+
     } catch (e) {
       setError(e.message);
     }

@@ -5,6 +5,7 @@ import ContactMatrixViewer from './ContactMatrixViewer';
 import AlignPdbViewer from './AlignPdbViewer';
 import QueryView from './QueryView';
 import QueryAgentView from './QueryAgentView';
+import BarContrastView from './BarContrastView';
 import { getPdbBlobURL } from './services/ProteinService';
 import ProteinData from './ProteinData';
 
@@ -41,12 +42,14 @@ const AVAILABLE_VIEWS = [
   {
     key: 'align',
     title: 'Alignment View',
-    component: (data) => (
+    component: (data, onUpdate) => (
       <AlignPdbViewer
         pdbId={data.pdbId}
         pdbUrl={data.pdbUrl}
         db="rcsb"
         height="350px"
+        proteinData={data}
+        proteinDataUpdateHandle={onUpdate}
       />
     ),
   },
@@ -65,6 +68,16 @@ const AVAILABLE_VIEWS = [
     title: 'MolScript AI Editor',
     component: (data, onUpdate) => (
       <QueryAgentView
+        proteinData={data}
+        proteinDataUpdateHandle={onUpdate}
+      />
+    ),
+  },
+  {
+    key: 'bar',
+    title: 'Bar Contrast View',
+    component: (data, onUpdate) => (
+      <BarContrastView
         proteinData={data}
         proteinDataUpdateHandle={onUpdate}
       />

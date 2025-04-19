@@ -109,7 +109,9 @@
 .chat-input button:hover:not(:disabled) { background: #1e4fd1; }
 .chat-input button:disabled            { opacity: 0.4; cursor: default; }
 
-/* --------------------------------------------------  Code panel  ----- */
+
+
+/* ------ Code panel  ----- */
 .code-panel {
   /* height: 300px; */
   flex: 1 1 0;
