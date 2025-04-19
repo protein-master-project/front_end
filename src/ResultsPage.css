@@ -119,6 +119,15 @@
   overflow: hidden;
 }
 
+/* for some side views */
+.visualization-card.wide {
+  grid-column: 1 / -1;     
+}
+
+.visualization-card.wide .protein-visualization {
+  height: 500px;           
+}
+
 
 .visualization-header {
   display: flex;
@@ -146,14 +155,23 @@
   color: #ff3333;
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
-.protein-visualization {
+/* .protein-visualization {
   padding: 10px;
   height: 350px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #fafafa;
-}
+} */
+
+.protein-visualization {
+  height: 350px;          /* 固定高度 */
+  background-color: #fafafa;
+  padding: 0;             /* 让 CodeMirror 顶边贴合 */
+  display: flex;
+  flex-direction: column; /* 允许内部 flex‑item 撑满 */
+  }
+  
 
 .results-footer {
   margin-top: 30px;

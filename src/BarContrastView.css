@@ -1,0 +1,29 @@
+.ssc-container {
+  width: 100%;
+  margin: 5px auto;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.ssc-container h3 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.ssc-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.structure-label {
+  font-weight: bold;
+  width: 130px;
+}
+
+.structure-bar {
+  flex: 1;
+  background: #f0f0f0;
+  position: relative;
+  height: 20px;
+}

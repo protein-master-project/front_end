@@ -101,3 +101,44 @@ export async function getAlignedPdbBlobURLs(
     URL.createObjectURL(blob2),
   ];
 }
+
+
+
+export interface BarContrastSeries {
+  helix:   number[];
+  strand:  number[];
+  turn:    number[];
+}
+
+/**
+ * Fetch secondary‐structure bar‐contrast data for one or two PDBs.
+ */
+export async function fetchBarContrast(
+  pdb1: string,
+  pdb2?: string,
+  db: string = 'rcsb'
+): Promise<BarContrastSeries[]> {
+  const params = [
+    `pdb1=${encodeURIComponent(pdb1)}`,
+    pdb2 ? `pdb2=${encodeURIComponent(pdb2)}` : undefined,
+    `db=${encodeURIComponent(db)}`
+  ]
+    .filter(Boolean)
+    .join('&');
+
+  const url = `${BACKEND_BASE_URL}/api/barcontrast?${params}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`BarContrast failed: ${res.status} ${res.statusText}`);
+    }
+    const json = await res.json();
+    // backend returns an object like { helix: [...], strand: [...], turn: [...] }
+    // or for two inputs { 0: {...}, 1: {...} }
+    return Object.values(json);
+  } catch (err) {
+    console.warn('fetchBarContrast proxy failed, returning empty dataset', err);
+    return [];
+  }
+}
