@@ -1,0 +1,132 @@
+/* QueryView.css */
+.query-view-wrapper {
+  height: 320px;
+  /* width: 100%;
+  display: flex;
+  flex-direction: column; */
+}
+
+.molql-editor {
+  text-align: left;
+  height: 320px;
+  max-height: 320px;
+}
+
+.query-view-wrapper .cm-wrap { 
+  height: 320px;
+  max-height: 320px 
+}
+.query-view-wrapper .cm-scroller { 
+  height: 320px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+/* ------- */
+/* Two‑column layout */
+.query‑two‑col {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+}
+
+/* ------------- CHAT ------------- */
+.chat-panel {
+  flex: 0 0 38%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chat-history {
+  flex: 1 1 auto;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.msg {
+  max-width: 85%;
+  margin-bottom: 0.7rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 12px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.msg.user {
+  margin-left: auto;
+  background: #4caf50;
+  color: #fff;
+}
+
+.msg.assistant {
+  margin-right: auto;
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.chat-input {
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.chat-input textarea {
+  flex: 1 1 auto;
+  resize: none;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+
+.chat-input button {
+  margin-left: 0.6rem;
+  padding: 0 1rem;
+  font-size: 0.95rem;
+  border: none;
+  background: #2980b9;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat-input button:disabled {
+  background: #9c9c9c;
+  cursor: not-allowed;
+}
+
+/* ------------- CODE ------------- */
+.code-panel {
+  flex: 1 1 62%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.molql-editor {
+  height: 100%;
+  flex: 1 1 auto;
+}
+
+.run-btn {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background: #3366ff;
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  transition: background 0.2s;
+}
+
+.run-btn:hover { background: #2448d8; }

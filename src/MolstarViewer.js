@@ -115,7 +115,6 @@ const MolstarViewer = ({
     if (!plugin || !structure) return;
 
 
-
     if(proteinData.selectedAtomRange != null){
       console.log("highlight atom range, from " + proteinData.selectedAtomRange[0]+ "to "+ proteinData.selectedAtomRange[1])
     }
@@ -156,11 +155,37 @@ const MolstarViewer = ({
       plugin.managers.interactivity.lociSelects.select({ loci: loci });
       // plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }); 
     }
+    else if (proteinData.queryCode != null) {
+      console.log("Running user-defined MolQL query...");
     
+      const data = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+      if (!data) return;
     
-
-
-
+      try {
+        // 完整包裹用户输入，使其成为表达式部分
+        const wrappedCode = `
+          const expression = (${proteinData.queryCode});
+          return Script.getStructureSelection(Q => expression, data);
+        `;
+    
+        const fn = new Function('plugin', 'data', 'Script', 'MS', 'Q', 'StructureSelection', wrappedCode);
+    
+        const selection = fn(plugin, data, Script, MS, MS, StructureSelection);
+    
+        // if (!StructureSelection.is(selection)) {
+        //   console.warn('Returned value is not a StructureSelection object.');
+        //   return;
+        // }
+    
+        const loci = StructureSelection.toLociWithSourceUnits(selection);
+    
+        plugin.managers.interactivity.lociSelects.deselectAll();
+        plugin.managers.interactivity.lociSelects.selectOnly({ loci });
+    
+      } catch (e) {
+        console.error('Error executing queryCode:', e);
+      }
+    }
   }, [proteinData]);
 
 
