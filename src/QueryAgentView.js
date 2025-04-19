@@ -76,7 +76,7 @@ const systemPrompt = useMemo(() => {
   // *** Keep the instruction for ```js block ``` ***
   return `
 You are an expert Mol* assistant.
-The user is currently exploring protein **${proteinData?.id ?? 'N/A'}**. Use that context when it matters.
+The user is currently exploring protein **${proteinData?.pdbId ?? 'N/A'}**. Use that context when it matters.
 
 ${ragPrompt}
   `.trim();
@@ -158,7 +158,7 @@ ${ragPrompt}
 
 
   return (
-    <div className="query-two-col">
+    <div className="query-two-col query-view-wrapper">
       {/* {loadError && (
         <div className="rag-error">
           Error loading prompt: {loadError}
