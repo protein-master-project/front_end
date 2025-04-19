@@ -1,7 +1,8 @@
 .ssc-container {
-  width: 800px;
-  margin: 20px auto;
+  width: 100%;
+  margin: 5px auto;
   font-family: Arial, sans-serif;
+  font-size: 12px;
 }
 
 .ssc-container h3 {
