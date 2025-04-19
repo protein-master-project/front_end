@@ -55,22 +55,32 @@ export default function QueryAgentView({
   }, []);
 
   // Build the system prompt whenever ragPrompt or proteinData.id changes
-  const systemPrompt = useMemo(() => {
-    // *** Keep the instruction for ```js block ``` ***
-    return `
-You are an expert Mol* / MolQL assistant.
+//   const systemPrompt = useMemo(() => {
+//     // *** Keep the instruction for ```js block ``` ***
+//     return `
+// You are an expert Mol* / MolQL assistant.
 
-1. Always generate a valid Mol* structure query inside a single \`\`\`js block\`\`\`, starting from the template below and modifying only the body.
+// 1. Always generate a valid Mol* structure query inside a single \`\`\`js block\`\`\`, starting from the template below and modifying only the body.
 
-${EMPTY_TEMPLATE}
+// ${EMPTY_TEMPLATE}
 
-2. The user is currently exploring protein **${proteinData?.id ?? 'N/A'}**. Use that context when it matters.
+// 2. The user is currently exploring protein **${proteinData?.id ?? 'N/A'}**. Use that context when it matters.
 
-Return nothing except the code and, if necessary, a one‑sentence explanation.
+// Return nothing except the code and, if necessary, a one‑sentence explanation.
+
+// ${ragPrompt}
+//     `.trim();
+//   }, [ragPrompt, proteinData?.id]);
+
+const systemPrompt = useMemo(() => {
+  // *** Keep the instruction for ```js block ``` ***
+  return `
+You are an expert Mol* assistant.
+The user is currently exploring protein **${proteinData?.id ?? 'N/A'}**. Use that context when it matters.
 
 ${ragPrompt}
-    `.trim();
-  }, [ragPrompt, proteinData?.id]);
+  `.trim();
+}, [ragPrompt, proteinData?.id]);
 
   // Only store user & assistant messages in state
   const [chatHistory, setChatHistory] = useState([]);

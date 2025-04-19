@@ -147,7 +147,8 @@
 
 .msg {
   /* ... (existing styles) ... */
-  line-height: 1.5; /* Slightly adjust line-height if needed for Markdown */
+  line-height: 1.0; /* Slightly adjust line-height if needed for Markdown */
+  text-align: left !important;
 }
 
 /* Styling for code blocks rendered by react-syntax-highlighter */
@@ -159,6 +160,9 @@
   overflow-x: auto; /* Allow horizontal scrolling for long code lines */
   font-size: 0.88rem; /* Slightly smaller font for code */
 }
+
+
+
 
 /* Styling for inline code */
 .msg code {
