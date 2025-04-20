@@ -5,7 +5,7 @@ import MolstarViewer from './MolstarViewer';
 import ContactMatrixViewer from './ContactMatrixViewer';
 import QueryAgentView from './QueryAgentView';
 import BarContrastView from './BarContrastView';
-import { getPdbBlobURL } from './services/ProteinService';
+import { getPdbBlobURL, fetchPdbInfo } from './services/ProteinService';
 import ProteinData from './ProteinData';
 
 const SingleProteinPage = () => {
@@ -29,11 +29,20 @@ const SingleProteinPage = () => {
       const pdbId = searchQuery;
       const pdbBlobUrl = await getPdbBlobURL(pdbId);
 
+      const pdbInfo = await fetchPdbInfo(pdbId);
+      console.log("pdbInfo"+pdbInfo)
+      const firstCitation = pdbInfo?.citation?.[0] ?? {};
+      const citationTitle = firstCitation.title ?? `Protein ${pdbId}`;
+      const doi = firstCitation.pdbx_database_id_DOI;
+      const description = `
+        ${citationTitle}${doi ? ` (<a href="https://doi.org/${doi}" target="_blank">DOI</a>)` : ''}
+        — <a href="https://www.rcsb.org/structure/${pdbId}" target="_blank">RCSB PDB</a>
+      `;
+
       setTimeout(() => {
         const newProteinData = new ProteinData(
           searchQuery || 'Trypsin',
-          `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer, 
-          <a href='https://www.rcsb.org/structure/${searchQuery}'>rcsb link</a>`,
+          description,
           pdbBlobUrl,
           pdbId,
           [],

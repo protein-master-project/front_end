@@ -43,7 +43,8 @@ function useLLMChat(proteinData, molql) {
   const systemPrompt = useMemo(() => `
   You are an expert Mol* assistant.
   The user is currently exploring protein **${proteinData?.pdbId ?? 'N/A'}**. Use that context when it matters.
-  
+  You can use emoji to add liveliness.
+
   Here is the current working MolQL query (may be partial or incorrect):
   \`\`\`js
   ${molql.trim()}
