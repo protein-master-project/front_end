@@ -10,9 +10,9 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // ---- Constants --------------------------------------------------------------
 // const EMPTY_TEMPLATE = `// ---- Mol* Query template (insert code below) ----\n`;
-const DEFAULT_MOLQL = `
-// Select all carbon atoms that are part of aromatic rings\nQ.struct.generator.rings({\n  'only-aromatic': true,\n  'atom-test': Q.core.set.has([\n    Q.set('C'),\n    Q.acp('elementSymbol')\n  ])\n})
-`;
+const DEFAULT_MOLQL = `// Example, select all carbon atoms that are part of aromatic rings
+Q.struct.generator.rings({\n  'only-aromatic': true,\n  'atom-test': Q.core.set.has([\n    Q.set('C'),\n    Q.acp('elementSymbol')\n  ])\n})
+\n\n\n`;
 
 // -----------------------------------------------------------------------------
 // 🪄1) Logic layer – isolate LLM chat in a reusable hook

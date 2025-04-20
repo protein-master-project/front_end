@@ -25,7 +25,7 @@ async function fetchDefaultPdb(): Promise<string> {
   return await response.text();
 }
 
-export async function searchProteins(keyword: string, db: string = 'rcsb'): Promise<string[]> {
+export async function searchProteins(keyword: string, db: string = 'rcsb') {
   const url = `${BACKEND_BASE_URL}/search?keyword=${encodeURIComponent(keyword)}&db=${db}`;
   
   try {
