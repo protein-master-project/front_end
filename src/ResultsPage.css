@@ -147,6 +147,14 @@
   height: 500px;           
 }
 
+.visualization-card.wide .protein-visualization.query-agent {
+  height: 350px;           
+}
+
+.visualization-card.wide .protein-visualization.bar-contrast {
+  height: 300px; 
+}
+
 
 .visualization-header {
   display: flex;
@@ -298,4 +306,17 @@
     width: 100%;
     margin-top: 15px;
   }
+}
+
+
+/* CompareProteinPage */
+.comparison-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  color: #222;
+  text-align: left;
+  padding: 1rem 0.5rem;
+  margin: 10px;
+  white-space: pre-wrap;
+  line-height: 1.5;
 }

@@ -5,7 +5,7 @@ import { PDBLoader } from 'three/addons/loaders/PDBLoader.js';
 const ContactMatrixViewer = ({
   pdbUrl,
   pdbId,
-  threshold = 10.0,
+  threshold = 8.0,
   width = 300, // Adjusted width of the canvas
   height = 300, // Adjusted height of the canvas
   proteinData = null,

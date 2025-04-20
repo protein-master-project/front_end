@@ -139,7 +139,7 @@ const SingleProteinPage = () => {
               {/* QueryAgentView - Wide */}
               <div className="visualization-card wide">
                 <div className="visualization-header">MolScript AI Editor</div>
-                <div className="protein-visualization">
+                <div className="protein-visualization query-agent">
                   <QueryAgentView
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}
@@ -150,7 +150,7 @@ const SingleProteinPage = () => {
               {/* BarContrastView */}
               <div className="visualization-card wide">
                 <div className="visualization-header">Bar Contrast View</div>
-                <div className="protein-visualization">
+                <div className="protein-visualization bar-contrast">
                   <BarContrastView
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}
