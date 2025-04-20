@@ -30,6 +30,12 @@
   font-size: 1.5rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;          
+  margin-left: auto; 
+}
+
 .search-bar {
   display: flex;
   width: 300px;
@@ -51,14 +57,15 @@
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   font-size: 14px;
+  margin-right: 10px;
 }
 
 .compare-button {
   padding: 8px 15px;
-  background-color: #3366ff;
+  background-color: gray;
   color: white;
   border: none;
-  border-radius:  4px 4px 0;
+  border-radius: 4px 4px 4px 4px;
   cursor: pointer;
   font-size: 14px;
 }
@@ -72,6 +79,7 @@
   cursor: pointer;
   font-size: 14px;
 }
+
 .results-content {
   padding: 20px;
 }
@@ -151,9 +159,13 @@
   height: 350px;           
 }
 
-.visualization-card.wide .protein-visualization.bar-contrast {
-  height: 300px; 
+.visualization-card.wide .protein-visualization.bar-contrast.one-protein {
+  height: 150px; 
 }
+
+/* .visualization-card.wide .protein-visualization.bar-contrast.two-protein {
+  height: 30px; 
+} */
 
 
 .visualization-header {
@@ -192,11 +204,11 @@
 } */
 
 .protein-visualization {
-  height: 350px;          /* 固定高度 */
+  height: 350px;        
   background-color: #fafafa;
-  padding: 0;             /* 让 CodeMirror 顶边贴合 */
+  padding: 0;            
   display: flex;
-  flex-direction: column; /* 允许内部 flex‑item 撑满 */
+  flex-direction: column; 
   }
   
 

@@ -32,7 +32,8 @@ const SingleProteinPage = () => {
       setTimeout(() => {
         const newProteinData = new ProteinData(
           searchQuery || 'Trypsin',
-          `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
+          `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer, 
+          <a href='https://www.rcsb.org/structure/${searchQuery}'>rcsb link</a>`,
           pdbBlobUrl,
           pdbId,
           [],
@@ -83,6 +84,7 @@ const SingleProteinPage = () => {
             <h1 className="logo-text">Protein Master</h1>
           </div>
 
+          <div className="header-actions">
           <div className="search-bar">
             <input
               type="text"
@@ -94,17 +96,22 @@ const SingleProteinPage = () => {
             <button onClick={handleNewSearch} className="search-button-small">Search</button>
           </div>
         </div>
+        <button onClick={handleCompareClick} className="compare-button">Compare With Another Protein</button>
+        </div>
 
         <div className="results-content">
           <div className="protein-header">
             <h2 className="protein-name">{proteinData.name}</h2>
             <div className="protein-id">{proteinData.id}</div>
-            <p className="protein-description">{proteinData.description}</p>
-            <button onClick={handleCompareClick} className="compare-button">Compare With Another Protein</button>
+            {/* <p className="protein-description">{proteinData.description}</p> */}
+            <p
+              className="protein-description"
+              dangerouslySetInnerHTML={{ __html: proteinData.description }}
+            />
           </div>
-
+          
           <div className="visualization-section">
-            <h3 className="section-title">Protein Visualization</h3>
+            {/* <h3 className="section-title">Protein Visualization</h3> */}
             <div className="visualization-grid single-protein-layout">
               {/* MolStar View */}
               <div className="visualization-card">
@@ -150,7 +157,7 @@ const SingleProteinPage = () => {
               {/* BarContrastView */}
               <div className="visualization-card wide">
                 <div className="visualization-header">Bar Contrast View</div>
-                <div className="protein-visualization bar-contrast">
+                <div className="protein-visualization bar-contrast one-protein">
                   <BarContrastView
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}
