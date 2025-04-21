@@ -13,6 +13,12 @@
   padding: 2rem;
 }
 
+.homepage-logo {
+  margin-top: -150px;
+  width: 150px; 
+  /* height: auto; */
+}
+
 .search-header {
   text-align: center;
   margin-bottom: 2rem;

@@ -7,6 +7,7 @@ import QueryAgentView from './QueryAgentView';
 import BarContrastView from './BarContrastView';
 import { getPdbBlobURL, fetchPdbInfo } from './services/ProteinService';
 import ProteinData from './ProteinData';
+import logo from './logo.png';
 
 const SingleProteinPage = () => {
   const [searchParams] = useSearchParams();
@@ -90,6 +91,7 @@ const SingleProteinPage = () => {
       <div className="results-container">
         <div className="results-header">
           <div className="logo">
+            <img src={logo} alt="Protein Master logo" className="logo-image" />
             <h1 className="logo-text">Protein Master</h1>
           </div>
 

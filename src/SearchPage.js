@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { searchProteins } from './services/ProteinService';
 import './SearchPage.css';
+import logo from './logo.png';
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,12 +73,19 @@ const SearchPage = () => {
 
   return (
     <div className="search-page">
+       <a
+            href="https://protein-master-project.github.io/"
+            className="project-link"
+          >
+        <img src={logo} alt="Protein Master logo" className="homepage-logo" />
+      </a>
+      
       <div className="search-container">
         {/* Header */}
         <div className="search-header">
-          <h1 className="app-title">Protein Master</h1>
+          {/* <h1 className="app-title">Protein Master</h1> */}
           <p className="app-subtitle">
-            Search for protein structure visualization
+          An Intelligent Platform for Protein Structure Retrieval and Visualization
           </p>
         </div>
 
@@ -157,9 +165,15 @@ const SearchPage = () => {
         </form>
 
         {/* Footer */}
-        <div className="search-footer">
+        {/* <div className="search-footer">
           <p>Find 3D and 2D visualizations about proteins</p>
-        </div>
+          <a
+            href="https://protein-master-project.github.io/"
+            className="project-link"
+          >
+            Project Homepage
+          </a>
+        </div> */}
       </div>
     </div>
   );
