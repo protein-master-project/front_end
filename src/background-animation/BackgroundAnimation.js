@@ -84,11 +84,13 @@ function Sphere({ position, color = 'white', vec = new THREE.Vector3(), ...props
 
 function Pointer({ vec = new THREE.Vector3() }) {
   const ref = useRef()
-  useFrame(({ mouse, viewport }) =>
-    ref.current.setNextKinematicTranslation(
-      vec.set((mouse.x * viewport.width) / 2, (mouse.y * viewport.height) / 2, 0)
-    )
-  )
+  useFrame(({ mouse, viewport }) => {
+    if (ref.current) {
+      ref.current.setNextKinematicTranslation(
+        vec.set((mouse.x * viewport.width) / 2, (mouse.y * viewport.height) / 2, 0)
+      )
+    }
+  })
   return (
     <RigidBody ref={ref} type="kinematicPosition" colliders={false}>
       <BallCollider args={[1]} />
