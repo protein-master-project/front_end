@@ -29,9 +29,21 @@ const BarContrastView = ({
 
   function handleResidueClick(residueIndex) {
     if (!proteinDataUpdateHandle) return;
-    console.log("residueIndex:"+residueIndex);
-    setHighlightedResidue(residueIndex);
     
+    // If clicking the same residue that's already selected, clear the selection
+    if (residueIndex === highlightedResidue) {
+      setHighlightedResidue(null);
+      proteinDataUpdateHandle({
+        selectedAtomRange: null,
+        selectedAtom: null,
+        queryLanguage: null,
+        queryCode: null,
+        selectedResidues: []
+      });
+      return;
+    }
+
+    setHighlightedResidue(residueIndex);
     proteinDataUpdateHandle({
       selectedAtomRange: null,
       selectedAtom: null,
@@ -39,18 +51,20 @@ const BarContrastView = ({
       queryCode: null,
       selectedResidues: [residueIndex]
     });
-
-    // proteinDataUpdateHandle({ 
-    //   selectedResidues: ,
-    //   selectedAtomRange: null,
-    //   selectedAtoms: null,
-    //   queryCode: null,
-      
-    // });
   }
 
   function handleResidueHover(residueIndex) {
     setHoveredResidue(residueIndex);
+
+    if (!highlightedResidue) {
+      proteinDataUpdateHandle({
+        selectedAtomRange: null,
+        selectedAtom: null,
+        queryLanguage: null,
+        queryCode: null,
+        selectedResidues: [residueIndex]
+      });
+    }
   }
 
   function getResidueStyle(d, color) {
