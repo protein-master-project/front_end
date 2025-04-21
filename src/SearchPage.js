@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { searchProteins } from './services/ProteinService';
 import './SearchPage.css';
 import logo from './logo.png';
+import { BackgroundAnimation } from './background-animation/BackgroundAnimation';
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,7 +15,6 @@ const SearchPage = () => {
   // Available data sources
   const dataSources = [
     { id: 'RCSB',      name: 'RCSB' },
-    // { id: 'pdb',       name: 'PDB' },
     { id: 'uniprot',   name: 'UniProt' },
     { id: 'alphafold', name: 'AlphaFold' }
   ];
@@ -73,10 +73,14 @@ const SearchPage = () => {
 
   return (
     <div className="search-page">
-       <a
-            href="https://protein-master-project.github.io/"
-            className="project-link"
-          >
+      <div className="background-animation-container">
+        <BackgroundAnimation />
+      </div>
+      
+      <a
+        href="https://protein-master-project.github.io/"
+        className="project-link"
+      >
         <img src={logo} alt="Protein Master logo" className="homepage-logo" />
       </a>
       
@@ -138,7 +142,7 @@ const SearchPage = () => {
               </div>
 
               <button type="submit" className="search-button">
-                Search
+                Visualize
               </button>
             </div>
           </div>
@@ -164,6 +168,9 @@ const SearchPage = () => {
           )}
         </form>
 
+        
+
+        {/* createRoot(document.getElementById('root')).render(<BackgroundAnimation />) */}
         {/* Footer */}
         {/* <div className="search-footer">
           <p>Find 3D and 2D visualizations about proteins</p>
