@@ -60,11 +60,34 @@
   margin-right: 10px;
 }
 
-.compare-button {
+.search-button-small:hover {
   padding: 8px 15px;
-  background-color: gray;
+  background-color: blue;
   color: white;
   border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.compare-button {
+  padding: 8px 15px;
+  border-color: black;
+  background-color: whitesmoke;
+  color: black;
+  /* border: none; */
+  border-radius: 4px 4px 4px 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.compare-button:hover {
+  padding: 8px 15px;
+  border-color: red;
+  background-color: whitesmoke;
+  color: black;
+  /* border: none; */
   border-radius: 4px 4px 4px 4px;
   cursor: pointer;
   font-size: 14px;

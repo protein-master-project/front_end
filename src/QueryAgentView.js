@@ -126,9 +126,11 @@ function ChatPanel({ chatHistory, input, setInput, isSending, onSend }) {
           rows={2}
           placeholder="Ask the LLM to build a query…"
           onKeyDown={e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            // if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key == "Enter") {
+              console.log(e.key)
               e.preventDefault();
-              onSend();
+              // onSend();
             }
           }}
         />

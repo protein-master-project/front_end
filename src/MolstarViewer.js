@@ -4,11 +4,18 @@ import { PluginConfig } from 'molstar/lib/mol-plugin/config';
 import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
 import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18';
 import { DefaultPluginUISpec, PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
-import 'molstar/lib/mol-plugin-ui/skin/light.scss';
+
+import './molstar-style/light.scss'
+
+import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
+import { Color }          from 'molstar/lib/mol-util/color';
 
 import { MolScriptBuilder as MS, MolScriptBuilder } from 'molstar/lib/mol-script/language/builder';
 import { Script } from 'molstar/lib/mol-script/script';
 import { StructureSelection } from 'molstar/lib/mol-model/structure/query';
+
+
+
 // import { Expression } from 'molstar/lib/mol-script/language/expression';
 // import {  StructureSelectionQuery } from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query'
 
@@ -19,7 +26,6 @@ import { StructureSelection } from 'molstar/lib/mol-model/structure/query';
 // import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
 // import { SetUtils } from 'molstar/lib/mol-util/set';
 // import { ProteinBackboneAtoms } from 'molstar/lib/mol-model/structure/model/types';
-
 
 
 const MolstarViewer = ({ 
@@ -52,9 +58,11 @@ const MolstarViewer = ({
                     right: 'hidden',        // Hide the right control bar.
                     bottom: 'hidden'        // Hide the bottom region.
                 },
-                controlsDisplay: 'landscape'
+                controlsDisplay: 'landscape',
+                
             }
         },
+        
         config: [
             [PluginConfig.VolumeStreaming.Enabled, false]
         ]
@@ -65,6 +73,15 @@ const MolstarViewer = ({
         target: containerRef.current,
         spec: MySpec,
         render: renderReact18
+      });
+
+      PluginCommands.Canvas3D.SetSettings(plugin, {
+        settings: {
+          renderer: {
+           ...(plugin.canvas3d?.props.renderer ?? {}),
+           backgroundColor: Color(0xffffff) 
+          }
+        }
       });
       
       if (!mounted) {
@@ -107,7 +124,7 @@ const MolstarViewer = ({
   }, [pdbId, viewType, enableVolumeStreaming]);
 
 
-
+  // handle protein actions
   useEffect(() => {    
     const plugin = pluginRef.current;
     const structure = structureRef.current;
@@ -162,7 +179,6 @@ const MolstarViewer = ({
       if (!data) return;
     
       try {
-        // 完整包裹用户输入，使其成为表达式部分
         const wrappedCode = `
           const expression = (${proteinData.queryCode});
           return Script.getStructureSelection(Q => expression, data);
@@ -194,6 +210,7 @@ const MolstarViewer = ({
   return (
     <div
       ref={containerRef}
+      className="molstar-container"  
       style={{
         width: width || '100%',
         height: height || '300px',
