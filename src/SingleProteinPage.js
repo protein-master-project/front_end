@@ -17,6 +17,12 @@ const SingleProteinPage = () => {
   const [loading, setLoading] = useState(true);
   const [proteinData, setProteinData] = useState(new ProteinData());
   
+  // Add state for collapsible sections
+  const [isStructureViewOpen, setIsStructureViewOpen] = useState(true);
+  const [isContactMatrixOpen, setIsContactMatrixOpen] = useState(true);
+  const [isMolScriptOpen, setIsMolScriptOpen] = useState(true);
+  const [isBarContrastOpen, setIsBarContrastOpen] = useState(true);
+
   // Debug information
   console.log("Current path:", location.pathname);
   console.log("Query params:", Object.fromEntries(searchParams.entries()));
@@ -122,58 +128,97 @@ const SingleProteinPage = () => {
           </div>
           
           <div className="visualization-section">
-            {/* <h3 className="section-title">Protein Visualization</h3> */}
             <div className="visualization-grid single-protein-layout">
               {/* MolStar View */}
               <div className="visualization-card">
-                <div className="visualization-header">Structure View</div>
-                <div className="protein-visualization">
-                  <MolstarViewer
-                    pdbId={proteinData.pdbId}
-                    pdbUrl={proteinData.pdbUrl}
-                    proteinData={proteinData}
-                    viewType="structure"
-                    height="350px"
-                  />
+                <div className="visualization-header">
+                  Structure View
+                  <button 
+                    className="collapse-button"
+                    onClick={() => setIsStructureViewOpen(!isStructureViewOpen)}
+                  >
+                    {isStructureViewOpen ? '−' : '+'}
+                  </button>
                 </div>
+                {isStructureViewOpen && (
+                  <div className="protein-visualization">
+                    <MolstarViewer
+                      pdbId={proteinData.pdbId}
+                      pdbUrl={proteinData.pdbUrl}
+                      proteinData={proteinData}
+                      viewType="structure"
+                      height="350px"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* ContactMap View */}
               <div className="visualization-card">
-                <div className="visualization-header">Contact Matrix</div>
-                <div className="protein-visualization">
-                  <ContactMatrixViewer
-                    pdbUrl={proteinData.pdbUrl}
-                    pdbId={proteinData.pdbId}
-                    threshold={10.0}
-                    width={350}
-                    height={350}
-                    proteinData={proteinData}
-                    proteinDataUpdateHandle={handleProteinDataUpdate}
-                  />
+                <div className="visualization-header">
+                  Contact Matrix
+                  <button 
+                    className="collapse-button"
+                    onClick={() => setIsContactMatrixOpen(!isContactMatrixOpen)}
+                  >
+                    {isContactMatrixOpen ? '−' : '+'}
+                  </button>
                 </div>
+                {isContactMatrixOpen && (
+                  <div className="protein-visualization">
+                    <ContactMatrixViewer
+                      pdbUrl={proteinData.pdbUrl}
+                      pdbId={proteinData.pdbId}
+                      threshold={10.0}
+                      width={350}
+                      height={350}
+                      proteinData={proteinData}
+                      proteinDataUpdateHandle={handleProteinDataUpdate}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* QueryAgentView - Wide */}
               <div className="visualization-card wide">
-                <div className="visualization-header">MolScript AI Editor</div>
-                <div className="protein-visualization query-agent">
-                  <QueryAgentView
-                    proteinData={proteinData}
-                    proteinDataUpdateHandle={handleProteinDataUpdate}
-                  />
+                <div className="visualization-header">
+                  MolScript AI Editor
+                  <button 
+                    className="collapse-button"
+                    onClick={() => setIsMolScriptOpen(!isMolScriptOpen)}
+                  >
+                    {isMolScriptOpen ? '−' : '+'}
+                  </button>
                 </div>
+                {isMolScriptOpen && (
+                  <div className="protein-visualization query-agent">
+                    <QueryAgentView
+                      proteinData={proteinData}
+                      proteinDataUpdateHandle={handleProteinDataUpdate}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* BarContrastView */}
               <div className="visualization-card wide">
-                <div className="visualization-header">Bar Contrast View</div>
-                <div className="protein-visualization bar-contrast one-protein">
-                  <BarContrastView
-                    proteinData={proteinData}
-                    proteinDataUpdateHandle={handleProteinDataUpdate}
-                  />
+                <div className="visualization-header">
+                  Bar Contrast View
+                  <button 
+                    className="collapse-button"
+                    onClick={() => setIsBarContrastOpen(!isBarContrastOpen)}
+                  >
+                    {isBarContrastOpen ? '−' : '+'}
+                  </button>
                 </div>
+                {isBarContrastOpen && (
+                  <div className="protein-visualization bar-contrast one-protein">
+                    <BarContrastView
+                      proteinData={proteinData}
+                      proteinDataUpdateHandle={handleProteinDataUpdate}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
