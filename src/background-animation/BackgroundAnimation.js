@@ -68,8 +68,12 @@ function Sphere({ position, color = 'white', vec = new THREE.Vector3(), ...props
   const pos = useMemo(() => position || [THREE.MathUtils.randFloatSpread(10), THREE.MathUtils.randFloatSpread(10), THREE.MathUtils.randFloatSpread(10)], [])
   useFrame((_, delta) => {
     delta = Math.min(0.1, delta)
+    if (api.current) {
     api.current.applyImpulse(vec.copy(api.current.translation()).negate().multiplyScalar(0.2))
+  }
+    if (ref.current) {
     easing.dampC(ref.current.material.color, color, 0.2, delta)
+  }
   })
   return (
     <RigidBody ref={api} position={pos} linearDamping={4} angularDamping={1} friction={0.1} colliders={false}>
