@@ -25,7 +25,7 @@ async function fetchDefaultPdb(): Promise<string> {
   return await response.text();
 }
 
-export async function searchProteins(keyword: string, db: string = 'rcsb'): Promise<string[]> {
+export async function searchProteins(keyword: string, db: string = 'rcsb') {
   const url = `${BACKEND_BASE_URL}/search?keyword=${encodeURIComponent(keyword)}&db=${db}`;
   
   try {
@@ -142,3 +142,44 @@ export async function fetchBarContrast(
     return [];
   }
 }
+
+
+/**
+ * fetchPdbInfo
+*/
+
+export interface PdbEntry {
+  rcsb_id: string;
+  citation?: Array<{
+    title: string;
+    pdbx_database_id_DOI: string | null;
+  }>;
+  nonpolymer_entities?: unknown[];
+  [key: string]: unknown; 
+}
+
+
+export async function fetchPdbInfo(
+  pdbId: string,
+  db: string = 'rcsb'
+): Promise<PdbEntry> {
+  const url = `${BACKEND_BASE_URL}/api/pdb/${encodeURIComponent(
+    pdbId
+  )}?db=${encodeURIComponent(db)}`;
+
+  try {
+    const response = await fetch(url);
+    console.log("info of"+pdbId+": "+response)
+    if (!response.ok) {
+      throw new Error(`fetchPdbInfo failed with status ${response.status}`);
+    }
+    return (await response.json());
+  } catch (error) {
+    console.warn(
+      `fetchPdbInfo failed or backend unavailable, returning empty object.`,
+      error
+    );
+    return {};
+  }
+}
+

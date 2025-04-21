@@ -10,14 +10,14 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // ---- Constants --------------------------------------------------------------
 // const EMPTY_TEMPLATE = `// ---- Mol* Query template (insert code below) ----\n`;
-const DEFAULT_MOLQL = `
-// Select all carbon atoms that are part of aromatic rings\nQ.struct.generator.rings({\n  'only-aromatic': true,\n  'atom-test': Q.core.set.has([\n    Q.set('C'),\n    Q.acp('elementSymbol')\n  ])\n})
-`;
+const DEFAULT_MOLQL = `// Example, select all carbon atoms that are part of aromatic rings
+Q.struct.generator.rings({\n  'only-aromatic': true,\n  'atom-test': Q.core.set.has([\n    Q.set('C'),\n    Q.acp('elementSymbol')\n  ])\n})
+\n\n\n`;
 
 // -----------------------------------------------------------------------------
 // 🪄1) Logic layer – isolate LLM chat in a reusable hook
 // -----------------------------------------------------------------------------
-function useLLMChat(proteinData) {
+function useLLMChat(proteinData, molql) {
   /* ---- LLM‑related state ---- */
   const [chatHistory, setChatHistory] = useState([]);           // messages w/o system
   const [input, setInput] = useState('');                       // textarea value
@@ -41,7 +41,16 @@ function useLLMChat(proteinData) {
 
   /* ---- system prompt ---- */
   const systemPrompt = useMemo(() => `
-  You are an expert Mol* assistant.\nThe user is currently exploring protein **${proteinData?.pdbId ?? 'N/A'}**. Use that context when it matters.\n\n${ragPrompt}`.trim(), 
+  You are an expert Mol* assistant.
+  The user is currently exploring protein **${proteinData?.pdbId ?? 'N/A'}**. Use that context when it matters.
+  You can use emoji to add liveliness.
+
+  Here is the current working MolQL query (may be partial or incorrect):
+  \`\`\`js
+  ${molql.trim()}
+  \`\`\`
+
+  ${ragPrompt}`.trim(), 
   [ragPrompt, proteinData?.pdbId]);
 
   /* ---- call LLM API ---- */
@@ -117,9 +126,11 @@ function ChatPanel({ chatHistory, input, setInput, isSending, onSend }) {
           rows={2}
           placeholder="Ask the LLM to build a query…"
           onKeyDown={e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            // if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key == "Enter") {
+              console.log(e.key)
               e.preventDefault();
-              onSend();
+              // onSend();
             }
           }}
         />
@@ -162,7 +173,7 @@ export default function QueryAgentView({ proteinData = null, proteinDataUpdateHa
     isSending,
     handleSend,
     loadError,
-  } = useLLMChat(proteinData);
+  } = useLLMChat(proteinData, molql);
 
   /* ---- trigger parent callback ---- */
   const runQuery = () => {

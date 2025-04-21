@@ -5,8 +5,9 @@ import MolstarViewer from './MolstarViewer';
 import ContactMatrixViewer from './ContactMatrixViewer';
 import QueryAgentView from './QueryAgentView';
 import BarContrastView from './BarContrastView';
-import { getPdbBlobURL } from './services/ProteinService';
+import { getPdbBlobURL, fetchPdbInfo } from './services/ProteinService';
 import ProteinData from './ProteinData';
+import logo from './logo.png';
 
 const SingleProteinPage = () => {
   const [searchParams] = useSearchParams();
@@ -29,10 +30,20 @@ const SingleProteinPage = () => {
       const pdbId = searchQuery;
       const pdbBlobUrl = await getPdbBlobURL(pdbId);
 
+      const pdbInfo = await fetchPdbInfo(pdbId);
+      console.log("pdbInfo"+pdbInfo)
+      const firstCitation = pdbInfo?.citation?.[0] ?? {};
+      const citationTitle = firstCitation.title ?? `Protein ${pdbId}`;
+      const doi = firstCitation.pdbx_database_id_DOI;
+      const description = `
+        ${citationTitle}${doi ? ` (<a href="https://doi.org/${doi}" target="_blank">DOI</a> style="color: grey;")` : ''}
+        — <a href="https://www.rcsb.org/structure/${pdbId}" target="_blank" style="color: grey;">RCSB PDB</a>
+      `;
+
       setTimeout(() => {
         const newProteinData = new ProteinData(
           searchQuery || 'Trypsin',
-          `A protein structure visualization for ${searchQuery || 'Trypsin'} using Mol* viewer`,
+          description,
           pdbBlobUrl,
           pdbId,
           [],
@@ -80,9 +91,11 @@ const SingleProteinPage = () => {
       <div className="results-container">
         <div className="results-header">
           <div className="logo">
+            <img src={logo} alt="Protein Master logo" className="logo-image" />
             <h1 className="logo-text">Protein Master</h1>
           </div>
 
+          <div className="header-actions">
           <div className="search-bar">
             <input
               type="text"
@@ -94,17 +107,22 @@ const SingleProteinPage = () => {
             <button onClick={handleNewSearch} className="search-button-small">Search</button>
           </div>
         </div>
+        <button onClick={handleCompareClick} className="compare-button">Compare With Another Protein</button>
+        </div>
 
         <div className="results-content">
           <div className="protein-header">
             <h2 className="protein-name">{proteinData.name}</h2>
             <div className="protein-id">{proteinData.id}</div>
-            <p className="protein-description">{proteinData.description}</p>
-            <button onClick={handleCompareClick} className="compare-button">Compare With Another Protein</button>
+            {/* <p className="protein-description">{proteinData.description}</p> */}
+            <p
+              className="protein-description"
+              dangerouslySetInnerHTML={{ __html: proteinData.description }}
+            />
           </div>
-
+          
           <div className="visualization-section">
-            <h3 className="section-title">Protein Visualization</h3>
+            {/* <h3 className="section-title">Protein Visualization</h3> */}
             <div className="visualization-grid single-protein-layout">
               {/* MolStar View */}
               <div className="visualization-card">
@@ -139,7 +157,7 @@ const SingleProteinPage = () => {
               {/* QueryAgentView - Wide */}
               <div className="visualization-card wide">
                 <div className="visualization-header">MolScript AI Editor</div>
-                <div className="protein-visualization">
+                <div className="protein-visualization query-agent">
                   <QueryAgentView
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}
@@ -150,7 +168,7 @@ const SingleProteinPage = () => {
               {/* BarContrastView */}
               <div className="visualization-card wide">
                 <div className="visualization-header">Bar Contrast View</div>
-                <div className="protein-visualization">
+                <div className="protein-visualization bar-contrast one-protein">
                   <BarContrastView
                     proteinData={proteinData}
                     proteinDataUpdateHandle={handleProteinDataUpdate}

@@ -5,16 +5,16 @@ import { fetchBarContrast } from './services/ProteinService';
 
 const BarContrastView = ({ 
   proteinData = null,
+  secondProteinData = null,
   proteinDataUpdateHandle = null
 }) => {
-
-  let pdb1 = proteinData.pdbId
-  let pdb2 = proteinData.secondPdbId
-
+  const pdb1 = proteinData?.pdbId;
+  const pdb2 = secondProteinData?.pdbId;
   const [datasets, setDatasets] = useState([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
+    if (!pdb1) return;
     fetchBarContrast(pdb1, pdb2)
       .then(data => setDatasets(data))
       .catch(err => console.error(err));
@@ -23,9 +23,7 @@ const BarContrastView = ({
   useEffect(() => {
     if (!datasets.length) return;
     renderSecondaryStructure();
-    console.log(datasets)
   }, [datasets]);
-
 
   function renderSecondaryStructure() {
     const maxResidue = Math.max(
@@ -33,21 +31,27 @@ const BarContrastView = ({
       200
     );
 
-    drawBar('helix',  datasets, ['helix1','helix2'],  '#ff4040');
-    drawBar('strand', datasets, ['strand1','strand2'], '#ffd700');
-    drawBar('turn',   datasets, ['turn1','turn2'],   '#4040ff');
+    const labels = ['helix', 'strand', 'turn'];
+    const colors = {
+      helix: '#ff4040',
+      strand: '#ffd700',
+      turn: '#4040ff'
+    };
 
-    function drawBar(type, dataArr, idArr, color) {
-      dataArr.forEach((data, i) => {
-        const id = idArr[i];
-        if (!id) return;
+    labels.forEach(label => {
+      drawBar(label, datasets.map(d => d[label]), label, colors[label]);
+    });
+
+    function drawBar(type, valuesArray, idPrefix, color) {
+      valuesArray.forEach((values, i) => {
+        const id = `${idPrefix}${i + 1}`;
         const svg = d3.select(`#${id}`)
           .selectAll('svg').data([null]).join('svg')
           .attr('width', 600)
           .attr('height', 20);
 
         svg.selectAll('rect')
-          .data(data[type])
+          .data(values)
           .join('rect')
           .attr('x', d => (d / maxResidue) * 600)
           .attr('y', 0)
@@ -61,30 +65,39 @@ const BarContrastView = ({
   return (
     <div className="ssc-container" ref={containerRef}>
       <h3>Secondary Structure Comparison</h3>
+
       <div className="ssc-row">
         <span className="structure-label">Helix ({pdb1})</span>
         <div id="helix1" className="structure-bar"></div>
       </div>
-      <div className="ssc-row">
-        <span className="structure-label">Helix ({pdb2})</span>
-        <div id="helix2" className="structure-bar"></div>
-      </div>
+      {pdb2 && (
+        <div className="ssc-row">
+          <span className="structure-label">Helix ({pdb2})</span>
+          <div id="helix2" className="structure-bar"></div>
+        </div>
+      )}
+
       <div className="ssc-row">
         <span className="structure-label">Beta strand ({pdb1})</span>
         <div id="strand1" className="structure-bar"></div>
       </div>
-      <div className="ssc-row">
-        <span className="structure-label">Beta strand ({pdb2})</span>
-        <div id="strand2" className="structure-bar"></div>
-      </div>
+      {pdb2 && (
+        <div className="ssc-row">
+          <span className="structure-label">Beta strand ({pdb2})</span>
+          <div id="strand2" className="structure-bar"></div>
+        </div>
+      )}
+
       <div className="ssc-row">
         <span className="structure-label">Turn ({pdb1})</span>
         <div id="turn1" className="structure-bar"></div>
       </div>
-      <div className="ssc-row">
-        <span className="structure-label">Turn ({pdb2})</span>
-        <div id="turn2" className="structure-bar"></div>
-      </div>
+      {pdb2 && (
+        <div className="ssc-row">
+          <span className="structure-label">Turn ({pdb2})</span>
+          <div id="turn2" className="structure-bar"></div>
+        </div>
+      )}
     </div>
   );
 };

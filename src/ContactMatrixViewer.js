@@ -5,7 +5,7 @@ import { PDBLoader } from 'three/addons/loaders/PDBLoader.js';
 const ContactMatrixViewer = ({
   pdbUrl,
   pdbId,
-  threshold = 10.0,
+  threshold = 8.0,
   width = 300, // Adjusted width of the canvas
   height = 300, // Adjusted height of the canvas
   proteinData = null,
@@ -19,6 +19,56 @@ const ContactMatrixViewer = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
+
+  const getMintGreenRGB = (distance) => {
+    const levels = [
+      { threshold: 1.0 * threshold / 6, color: [224, 242, 241] },
+      { threshold: 2.0 * threshold / 6, color: [178, 223, 219] },
+      { threshold: 3.0 * threshold / 6, color: [128, 203, 196] },
+      { threshold: 4.0 * threshold / 6, color: [77, 182, 172] },
+      { threshold: 5.0 * threshold / 6, color: [0, 140, 140] },
+      { threshold: threshold, color: [0, 100, 110] }
+    ];
+  
+    for (let i = 0; i < levels.length; i++) {
+      if (distance <= levels[i].threshold) return levels[i].color;
+    }
+    return [255, 255, 255]; // default for beyond threshold
+  };
+
+
+  
+  const interpolateColor = (
+    distance,
+    maxDistance,
+    startColor = [0, 0, 255],    
+    midColor   = [255, 255, 255], 
+    endColor   = [255, 0, 0],
+    midPoint = 0.5
+  ) => {
+    const t = Math.min(distance / maxDistance, 1);
+  
+    const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+  
+    if (t < midPoint) {
+      const ratio = t / midPoint;
+      return [
+        lerp(startColor[0], midColor[0], ratio),
+        lerp(startColor[1], midColor[1], ratio),
+        lerp(startColor[2], midColor[2], ratio),
+      ];
+    } else {
+      const ratio = (t - midPoint) / (1 - midPoint);
+      return [
+        lerp(midColor[0], endColor[0], ratio),
+        lerp(midColor[1], endColor[1], ratio),
+        lerp(midColor[2], endColor[2], ratio),
+      ];
+    }
+  };
+  
+
+
   // Load and process PDB data
   useEffect(() => {
     if (!pdbUrl) return;
@@ -45,6 +95,32 @@ const ContactMatrixViewer = ({
           
           // Create contact matrix on the base canvas
           const imageData = baseCtx.createImageData(totalAtoms, totalAtoms);
+          
+          // for (let i = 0; i < totalAtoms; i++) {
+          //   const [xi, yi, zi] = atoms[i];
+          //   for (let j = 0; j < totalAtoms; j++) {
+          //     const [xj, yj, zj] = atoms[j];
+          //     const dx = xi - xj;
+          //     const dy = yi - yj;
+          //     const dz = zi - zj;
+          //     const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          //     const pixelIndex = (i * totalAtoms + j) * 4;
+              
+          //     if (distance < threshold) {
+          //       const intensity = Math.floor(((threshold - distance) / threshold) * 255);
+          //       imageData.data[pixelIndex] = 255;                   // R
+          //       imageData.data[pixelIndex + 1] = 255 - intensity;     // G
+          //       imageData.data[pixelIndex + 2] = 255 - intensity;     // B
+          //       imageData.data[pixelIndex + 3] = 255;                 // A
+          //     } else {
+          //       imageData.data[pixelIndex] = 255; // R
+          //       imageData.data[pixelIndex + 1] = 255; // G
+          //       imageData.data[pixelIndex + 2] = 255; // B
+          //       imageData.data[pixelIndex + 3] = 255; // A
+          //     }
+          //   }
+          // }
+
           for (let i = 0; i < totalAtoms; i++) {
             const [xi, yi, zi] = atoms[i];
             for (let j = 0; j < totalAtoms; j++) {
@@ -54,21 +130,47 @@ const ContactMatrixViewer = ({
               const dz = zi - zj;
               const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
               const pixelIndex = (i * totalAtoms + j) * 4;
-              
-              if (distance < threshold) {
-                const intensity = Math.floor(((threshold - distance) / threshold) * 255);
-                imageData.data[pixelIndex] = 255;                   // R
-                imageData.data[pixelIndex + 1] = 255 - intensity;     // G
-                imageData.data[pixelIndex + 2] = 255 - intensity;     // B
-                imageData.data[pixelIndex + 3] = 255;                 // A
+          
+              if (distance <= threshold) {
+                const [r, g, b] = getMintGreenRGB(distance);
+                imageData.data[pixelIndex] = r;
+                imageData.data[pixelIndex + 1] = g;
+                imageData.data[pixelIndex + 2] = b;
+                imageData.data[pixelIndex + 3] = 255;
               } else {
-                imageData.data[pixelIndex] = 255; // R
-                imageData.data[pixelIndex + 1] = 255; // G
-                imageData.data[pixelIndex + 2] = 255; // B
-                imageData.data[pixelIndex + 3] = 255; // A
+                imageData.data[pixelIndex] = 255;
+                imageData.data[pixelIndex + 1] = 255;
+                imageData.data[pixelIndex + 2] = 255;
+                imageData.data[pixelIndex + 3] = 255;
               }
             }
           }
+
+          // for (let i = 0; i < totalAtoms; i++) {
+          //   const [xi, yi, zi] = atoms[i];
+          //   for (let j = 0; j < totalAtoms; j++) {
+          //     const [xj, yj, zj] = atoms[j];
+          //     const dx = xi - xj;
+          //     const dy = yi - yj;
+          //     const dz = zi - zj;
+          //     const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          //     const pixelIndex = (i * totalAtoms + j) * 4;
+          
+          //     if (distance <= threshold) {
+          //       const [r, g, b] = interpolateColor(distance, threshold);
+          //       imageData.data[pixelIndex] = r;
+          //       imageData.data[pixelIndex + 1] = g;
+          //       imageData.data[pixelIndex + 2] = b;
+          //       imageData.data[pixelIndex + 3] = 255;
+          //     } else {
+          //       imageData.data[pixelIndex] = 255;
+          //       imageData.data[pixelIndex + 1] = 255;
+          //       imageData.data[pixelIndex + 2] = 255;
+          //       imageData.data[pixelIndex + 3] = 255;
+          //     }
+          //   }
+          // }
+          
           
           baseCtx.putImageData(imageData, 0, 0);
           renderCanvas();
@@ -264,7 +366,8 @@ const ContactMatrixViewer = ({
         <div style={{
           width: '8px',
           height: '300px',
-          background: 'linear-gradient(to bottom, rgb(255,0,0), white)',
+          // background: 'linear-gradient(to bottom, rgb(255,0,0), white)',
+          background: 'linear-gradient(to bottom, rgb(0, 140, 140), white)',
           border: '1px solid #ccc'
         }} />
         {/* Labels for the gradient */}

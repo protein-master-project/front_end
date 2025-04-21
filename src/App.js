@@ -5,10 +5,13 @@ import SearchPage from './SearchPage';
 import SingleProteinPage from './SingleProteinPage';
 import CompareProteinsPage from './CompareProteinsPage';
 import ResultsPage from './ResultsPage'; // Keep the original for fallback
+// import { BackgroundAnimation } from './background-animation/BackgroundAnimation'
 
 function App() {
   return (
     <Router>
+      {/* <BackgroundAnimation /> */}
+
       <div className="App">
         <Routes>
           {/* Keep original ResultsPage but also add redirect */}
