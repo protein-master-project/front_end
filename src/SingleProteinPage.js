@@ -36,7 +36,7 @@ const SingleProteinPage = () => {
       const citationTitle = firstCitation.title ?? `Protein ${pdbId}`;
       const doi = firstCitation.pdbx_database_id_DOI;
       const description = `
-        ${citationTitle}${doi ? ` (<a href="https://doi.org/${doi}" target="_blank">DOI</a> style="color: grey;")` : ''}
+        ${citationTitle}${doi ? ` (<a href="https://doi.org/${doi}" target="_blank" style="color: grey;">DOI</a>)` : ''}
         — <a href="https://www.rcsb.org/structure/${pdbId}" target="_blank" style="color: grey;">RCSB PDB</a>
       `;
 
