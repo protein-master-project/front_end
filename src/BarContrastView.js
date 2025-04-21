@@ -11,6 +11,8 @@ const BarContrastView = ({
   const pdb1 = proteinData?.pdbId;
   const pdb2 = secondProteinData?.pdbId;
   const [datasets, setDatasets] = useState([]);
+  const [highlightedResidue, setHighlightedResidue] = useState(null);
+  const [hoveredResidue, setHoveredResidue] = useState(null);
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +25,54 @@ const BarContrastView = ({
   useEffect(() => {
     if (!datasets.length) return;
     renderSecondaryStructure();
-  }, [datasets]);
+  }, [datasets, proteinData, highlightedResidue, hoveredResidue]);
+
+  function handleResidueClick(residueIndex) {
+    if (!proteinDataUpdateHandle) return;
+    console.log("residueIndex:"+residueIndex);
+    setHighlightedResidue(residueIndex);
+    
+    proteinDataUpdateHandle({
+      selectedAtomRange: null,
+      selectedAtom: null,
+      queryLanguage: null,
+      queryCode: null,
+      selectedResidues: [residueIndex]
+    });
+
+    // proteinDataUpdateHandle({ 
+    //   selectedResidues: ,
+    //   selectedAtomRange: null,
+    //   selectedAtoms: null,
+    //   queryCode: null,
+      
+    // });
+  }
+
+  function handleResidueHover(residueIndex) {
+    setHoveredResidue(residueIndex);
+  }
+
+  function getResidueStyle(d, color) {
+    if (d === highlightedResidue) {
+      return {
+        fill: '#00ff00',
+        stroke: '#000000',
+        strokeWidth: 1
+      };
+    } else if (d === hoveredResidue) {
+      return {
+        fill: '#ff00ff',
+        stroke: '#000000',
+        strokeWidth: 1
+      };
+    }
+    return {
+      fill: color,
+      stroke: 'none',
+      strokeWidth: 0
+    };
+  }
 
   function renderSecondaryStructure() {
     const maxResidue = Math.max(
@@ -57,7 +106,12 @@ const BarContrastView = ({
           .attr('y', 0)
           .attr('width', 2)
           .attr('height', 20)
-          .attr('fill', color);
+          .attr('fill', d => getResidueStyle(d, color).fill)
+          .attr('stroke', d => getResidueStyle(d, color).stroke)
+          .attr('stroke-width', d => getResidueStyle(d, color).strokeWidth)
+          .on('click', (event, d) => handleResidueClick(d))
+          .on('mouseover', (event, d) => handleResidueHover(d))
+          .on('mouseout', () => handleResidueHover(null));
       });
     }
   }

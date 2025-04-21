@@ -172,6 +172,20 @@ const MolstarViewer = ({
       plugin.managers.interactivity.lociSelects.select({ loci: loci });
       // plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }); 
     }
+    else if (proteinData.selectedResidues != null) {
+      console.log("highlight residues:" + proteinData.selectedResidues[0])
+      const data = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+      if (!data) return;
+
+      const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+        'residue-test': Q.core.rel.eq([Q.ammp('auth_seq_id'), proteinData.selectedResidues[0]])
+      }), data);
+
+      const loci = StructureSelection.toLociWithSourceUnits(selection);   
+      
+      plugin.managers.interactivity.lociSelects.deselectAll();
+      plugin.managers.interactivity.lociSelects.select({ loci: loci });
+    }
     else if (proteinData.queryCode != null) {
       console.log("Running user-defined MolQL query...");
     

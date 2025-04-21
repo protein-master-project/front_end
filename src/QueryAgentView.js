@@ -182,6 +182,7 @@ export default function QueryAgentView({ proteinData = null, proteinDataUpdateHa
       selectedAtom: null,
       queryLanguage: 'MOLQL',
       queryCode: molql,
+      selectedResidues: null
     });
   };
 

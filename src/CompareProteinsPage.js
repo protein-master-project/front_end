@@ -130,7 +130,7 @@ const CompareProteinsPage = () => {
                 }}
               >
 
-                {/* ↓↓↓ Row 1: ALIGNMENT + TEXT ↓↓↓ */}
+                {/* ↓↓↓ Row 1: ALIGNMENT + TEXT ↓↓↓ */}
                 <div className="visualization-card">
                   <div className="visualization-header">Alignment View</div>
                   <AlignPdbViewer
@@ -150,7 +150,7 @@ const CompareProteinsPage = () => {
                   </div>
                 </div>
 
-                {/* ↓↓↓ Row 2: CONTACT MAPS ↓↓↓ */}
+                {/* ↓↓↓ Row 2: CONTACT MAPS ↓↓↓ */}
                 <div className="visualization-card">
                   <div className="visualization-header">Contact Matrix: {protein1Id}</div>
                   <ContactMatrixViewer
@@ -180,15 +180,16 @@ const CompareProteinsPage = () => {
                   />
                 </div>
 
-                {/* ↓↓↓ Row 3: BAR CONTRAST (full‑width) ↓↓↓ */}
+                {/* ↓↓↓ Row 3: BAR CONTRAST (full‑width) ↓↓↓ */}
                 <div className="visualization-card" style={{ gridColumn: '1 / -1' }}>
                   <div className="visualization-header">Bar Contrast View</div>
                   <BarContrastView
                     proteinData={protein1Data}
                     secondProteinData={protein2Data}
-                    proteinDataUpdateHandle={data =>
-                      setProtein1Data(prev => ({ ...prev, ...data }))
-                    }
+                    proteinDataUpdateHandle={data => {
+                      console.log('Updating protein data with:', data);
+                      setProtein1Data(prev => ({ ...prev, ...data }));
+                    }}
                   />
                 </div>
 
@@ -198,7 +199,7 @@ const CompareProteinsPage = () => {
 
           <div className="results-footer">
             <div className="footer-note">
-              Note: Prototype using Mol* and 3Dmol.js. Data from RCSB PDB.
+              Note: Prototype using Mol* and 3Dmol.js. Data from RCSB PDB.
             </div>
           </div>
         </div>

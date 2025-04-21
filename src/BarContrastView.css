@@ -27,3 +27,8 @@
   position: relative;
   height: 20px;
 }
+
+.structure-bar svg rect.selected {
+  stroke: #ffff00;
+  stroke-width: 2px;
+}
