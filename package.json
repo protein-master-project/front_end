@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.3",
+    "@rbnd/react-dark-mode": "^2.0.2",
     "@react-three/drei": "9.78.0",
     "@react-three/fiber": "8.13.4",
     "@react-three/postprocessing": "2.15.11",

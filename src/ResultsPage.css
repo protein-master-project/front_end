@@ -89,8 +89,8 @@
 
 .compare-button {
   padding: 8px 15px;
-  background-color: #3366ff;
-  color: white;
+  background-color: whitesmoke;
+  color: black;
   /* border: none; */
   border-radius: 4px 4px 4px 4px;
   cursor: pointer;

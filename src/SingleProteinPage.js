@@ -9,6 +9,9 @@ import { getPdbBlobURL, fetchPdbInfo } from './services/ProteinService';
 import ProteinData from './ProteinData';
 import logo from './logo.png';
 
+import { DarkModeProvider, useDarkMode } from "@rbnd/react-dark-mode"
+// import { Button } from "@rbnd/react-dark-mode" // Assuming Button is from the same library
+
 const SingleProteinPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -22,6 +25,8 @@ const SingleProteinPage = () => {
   const [isContactMatrixOpen, setIsContactMatrixOpen] = useState(true);
   const [isMolScriptOpen, setIsMolScriptOpen] = useState(true);
   const [isBarContrastOpen, setIsBarContrastOpen] = useState(true);
+
+  // const { mode, setMode } = useDarkMode()
 
   // Debug information
   console.log("Current path:", location.pathname);
@@ -93,6 +98,7 @@ const SingleProteinPage = () => {
   }
 
   return (
+    <DarkModeProvider>
     <div className="results-page">
       <div className="results-container">
         <div className="results-header">
@@ -115,6 +121,12 @@ const SingleProteinPage = () => {
         </div>
         <button onClick={handleCompareClick} className="compare-button">Compare With Another Protein</button>
         </div>
+
+        {/* <Button
+          onClick={() => setMode("dark")}
+          active={mode === "dark"}>
+          Dark
+        </Button> */}
 
         <div className="results-content">
           <div className="protein-header">
@@ -231,6 +243,7 @@ const SingleProteinPage = () => {
         </div>
       </div>
     </div>
+    </DarkModeProvider>
   );
 };
 

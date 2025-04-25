@@ -106,7 +106,6 @@ const mdComponents = {
 
 function ChatPanel({ chatHistory, input, setInput, isSending, onSend }) {
   const bottomRef = useRef(null);
-  useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [chatHistory]);
 
   return (
     <div className="chat-panel">
@@ -127,7 +126,7 @@ function ChatPanel({ chatHistory, input, setInput, isSending, onSend }) {
           placeholder="Ask the LLM to build a query…"
           onKeyDown={e => {
             // if (e.key === 'Enter' && !e.shiftKey) {
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
               console.log(e.key)
               e.preventDefault();
               // onSend();
